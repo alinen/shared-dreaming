@@ -63,6 +63,8 @@ class SphereHelper
      this.pos[2] += this.vel[2] * dt;
      this.toData(idx, data);
 
+     //console.log(this.pos);
+
      return finished;
    }
 }
