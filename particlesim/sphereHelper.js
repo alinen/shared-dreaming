@@ -1,4 +1,4 @@
-class Bubble
+class SphereHelper
 {
    constructor()
    {
@@ -8,6 +8,7 @@ class Bubble
       this.radius = 0.0;
    }
 
+   // ASN: maybe avoid this copying
    fromData(idx, data)
    {
      var i = idx * 3 * 4;

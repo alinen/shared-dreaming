@@ -6,7 +6,7 @@ class Bubbles
         this.numSpheres = numSpheres;
         this.textureSize = maxNumSpheres * 3;
         this.data = []; 
-        this.sh = new Bubble();
+        this.sh = new SphereHelper();
 
         this.setupSpheres();
     }
