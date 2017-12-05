@@ -61,4 +61,8 @@ class Bubbles
     }    
 }
 
+function createSystem(numSpheres, maxSpheres)
+{
+    return new Bubbles(numSpheres, maxSpheres);
+}
 

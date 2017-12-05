@@ -7,7 +7,7 @@ var lastTime = 0;
 var numSpheres = 50;
 var textureId = 0;
 var gl;
-var system = new Bubbles(50, 100);
+var system = createSystem(1, 10); 
 
 function initGL(canvas)
 {
@@ -179,7 +179,7 @@ function drawScene()
    gl.uniform1f(uTextureSize, textureSize);
 
    var uNumSpheres = gl.getUniformLocation(shaderProgram, "num_of_spheres");
-   gl.uniform1f(uNumSpheres, numSpheres);
+   gl.uniform1f(uNumSpheres, system.numSpheres);
 
    gl.activeTexture(gl.TEXTURE0);
    gl.bindTexture(gl.TEXTURE_2D, textureId);
