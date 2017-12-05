@@ -6,7 +6,7 @@ defmodule SharedDreamingWeb.UserSocket do
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
-  # transport :longpoll, Phoenix.Transports.LongPoll
+  transport :longpoll, Phoenix.Transports.LongPoll
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
@@ -19,8 +19,8 @@ defmodule SharedDreamingWeb.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(_params, socket) do
-    {:ok, socket}
+  def connect(%{"token" => token}, socket) do
+    {:ok, assign(socket, :token, token)}
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:
