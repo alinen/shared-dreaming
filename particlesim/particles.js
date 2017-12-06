@@ -8,10 +8,10 @@ var numSpheres = 50;
 var textureId = 0;
 var handTextureId = 1;
 var gl;
-var system = new Bubbles(50, 100);
+var system = new Bubbles(10, 20);
 var hand = new HandHelper();
 
-var handTextureSize = 1 * 2 * 4;
+var handTextureSize = 1 * 2;
 
 function initGL(canvas)
 {
@@ -80,8 +80,6 @@ function initTexture()
 {
    var num_of_floats = system.maxNumSpheres * 3 * 4;
 
-   //system.setupSpheres(); // asn can I remove and call from ctor?
-
    textureId = gl.createTexture();
    gl.bindTexture(gl.TEXTURE_2D, textureId);
    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
@@ -97,14 +95,11 @@ function initTexture()
 
 function initHandTexture()
 {
-   // handTextureId = gl.createTexture();
    gl.bindTexture(gl.TEXTURE_2D, handTextureId);
    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
-   // handTextureSize = 1 * 2;
 
    console.log('hand.data', hand.data)
 
@@ -243,23 +238,21 @@ function tick()
 
 function webGLStart()
 {
-   var canvas = document.getElementById("canvas");
-    // hand = new HandHelper();
-    initHandRecording();
-   initGL(canvas);
-   initShaders();
-   initBuffers();
-   initTexture();
+  var canvas = document.getElementById("canvas");
+  initHandRecording();
+  initGL(canvas);
+  initShaders();
+  initBuffers();
+  initTexture();
 
-   handTextureId = gl.createTexture();
+  handTextureId = gl.createTexture();
 
-   gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
-   gl.pixelStorei(gl.PACK_ALIGNMENT, 1);
-   // initHandTexture();
+  gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+  gl.pixelStorei(gl.PACK_ALIGNMENT, 1);
 
-   lastTime =  new Date().getTime();
-   gl.clearColor(0.1, 0.1, 0.1, 1.0);
-   tick();
+  lastTime =  new Date().getTime();
+  gl.clearColor(0.1, 0.1, 0.1, 1.0);
+  tick();
 }
 
 
