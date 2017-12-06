@@ -79,9 +79,6 @@ function initTexture()
 {
    textureId = gl.createTexture();
 
-   // gl.enable(gl.TEXTURE_2D);
-
-   // gl.activeTexture(gl.TEXTURE0);
    gl.bindTexture(gl.TEXTURE_2D, textureId);
 
    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
@@ -92,30 +89,24 @@ function initTexture()
    textureSize = system.maxNumSpheres * 3;
 
    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, textureSize, 1, 0, gl.RGBA, gl.FLOAT, system.data);
-   // gl.bindTexture(gl.TEXTURE_2D, null);
+   gl.bindTexture(gl.TEXTURE_2D, null);
 }
 
 function initHandTexture()
 {
   handTextureId = gl.createTexture();
 
-   // gl.enable(gl.TEXTURE_2D);
+  gl.bindTexture(gl.TEXTURE_2D, handTextureId);
 
-   // gl.activeTexture(gl.TEXTURE1);
-   gl.bindTexture(gl.TEXTURE_2D, handTextureId);
-
-   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
   handTextureSize = numHands * 2;
 
-   console.log('hand.data', hand.data)
-
    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, handTextureSize, 1, 0, gl.RGBA, gl.FLOAT, hand.data);
-   // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, handTextureSize, 1, 0, gl.RGBA, gl.FLOAT, hand.data);
-   // gl.bindTexture(gl.TEXTURE_2D, null);
+   gl.bindTexture(gl.TEXTURE_2D, null);
 }
 
 function createGlBuffer(values, itemSize, numItems, type)
@@ -229,8 +220,6 @@ function drawScene()
 
    var uHandInfo = gl.getUniformLocation(shaderProgram, "hand_info");
    gl.uniform1i(uHandInfo, 1);
-
-
 
    gl.drawArrays(gl.TRIANGLE_FAN, 0, squareVertexPositionBuffer.numItems);
 }
