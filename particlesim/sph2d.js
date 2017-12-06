@@ -8,21 +8,21 @@ class Params
       this.rho0 = 1000; // reference density
       this.k = 800; //bulk modulus
       this.mu = 9000.1; // viscosity
-      this.g = -0.1; // gravity strength
-      this.minx = -2;
-      this.maxx = 2;
-      this.miny = -2;
-      this.maxy = 2;
+      this.g = -0.01; // gravity strength
+      this.min = vec3.fromValues(-2, -1.25, -2);
+      this.max = vec3.fromValues(2, 1.25, 2);
       this.maxacc = 100;
+      this.kIntersect = 100;
    }  
 };
 
 class Obstacle
 {
-    constructor(xstart, ystart, xend, yend)
+    constructor(start, end, radius)
     {
-        this.a = vec3.fromValues(xstart, ystart, 0.0);
-        this.b = vec3.fromValues(xend, yend, 0.0);
+        this.a = start;
+        this.b = end
+        this.r = radius;
         console.log("OBS "+this.a);
         console.log("OBS "+this.b);
     }
@@ -43,17 +43,28 @@ class SPH2D
       this.rho = [];  // floats
       this.maxdensity = 0;
       this.paused = false;
-      this.intersection = []; // booleans
       this.obstacles = [];
       this.sh = new SphereHelper();
 
+      // Boundaries of the computational domain
+      var leftWallStart = vec3.fromValues(this.params.min[0], this.params.min[1], 0); // todo: make a plane
+      var leftWallEnd = vec3.fromValues(this.params.min[0], this.params.max[1], 0); // todo 
+      this.leftWall = new Obstacle(leftWallStart, leftWallEnd, 0);
+            
+      var rightWallStart = vec3.fromValues(this.params.max[0], this.params.min[1], 0); // todo: make a plane
+      var rightWallEnd = vec3.fromValues(this.params.max[0], this.params.max[1], 0); // todo 
+      this.rightWall = new Obstacle(rightWallStart, rightWallEnd, 0);
+
+      var bottomWallStart = vec3.fromValues(this.params.min[0], this.params.min[1], 0); // todo: make a plane
+      var bottomWallEnd = vec3.fromValues(this.params.max[0], this.params.min[1], 0); // todo 
+      this.bottomWall = new Obstacle(bottomWallStart, bottomWallEnd, 0);
+      
+      // create some obstacles to test
+      this.pushObstacle(vec3.fromValues(-2,1,-2), vec3.fromValues(2,-2,-2));
+      
       this.setupSpheres();
       this.init();
-
-      // ASN: the following is holderover from p5 implementation (get rid of it)?
-      //positions[0].y = 241;
-      //velocities[0].y = -20;
-      //damp_reflect(0, new Obstacle(0, this.height, this.width, this.height));
+      this.reflectAtBoundaries();
    }
 
    setupSpheres()
@@ -70,7 +81,6 @@ class SPH2D
          this.vh.push(vec3.create());
          this.accelerations.push(vec3.create());
          this.rho.push(0);
-         this.intersection.push(false);
       }
    }
 
@@ -87,7 +97,7 @@ class SPH2D
          this.sh.fromData(i, this.data);
          this.sh.radius = this.params.r; 
          this.sh.pos[0] = -2.0 + this.params.r+cellj*margin;
-         this.sh.pos[1] = this.params.r+celli*margin;
+         this.sh.pos[1] = this.params.r+celli*margin + 1.25;
          this.sh.pos[2] = -2.0;
          this.sh.toData(i, this.data);
          
@@ -107,6 +117,9 @@ class SPH2D
         {
             this.computeAccel();
             this.leapfrogStep();
+
+            this.sh.fromData(0, this.data);
+            console.log(this.sh.pos[1]);
         }
     }
 
@@ -177,22 +190,18 @@ class SPH2D
       this.computeDensity();
 
       // Start with gravity and surface forces
+      var spherePos = vec3.create();
       for (var i = 0; i < this.numSpheres; ++i) 
       {
         vec3.set(this.accelerations[i], 0, this.params.g, 0);
-        /* ASN TODO
-        for (var j = 0; j < obstacles.length; j++)
+        this.sh.fromData(i, this.data);
+        vec3.set(spherePos, this.sh.pos[0], this.sh.pos[1], this.sh.pos[2]);
+        for (var j = 0; j < this.obstacles.length; j++)
         {
-          var b = this.capsuleIntersect(this.positions[i], this.velocities[i], obstacles[j]);
-          if (b === true)
-          {
             // compute repellent force
-            var force = this.capsuleForce(this.positions[i], this.velocities[i], obstacles[j]);
-            this.accelerations[i].x += force.x;
-            this.accelerations[i].y += force.y;        
-          }
+            var force = this.capsuleForce(spherePos, this.velocities[i], this.obstacles[j]);
+            vec3.add(this.accelerations[i], this.accelerations[i], force);
         }    
-        */
       }
       
       // Constants for interaction term
@@ -308,120 +317,92 @@ class SPH2D
 
     capsuleForce(p, v, obs)
     {
-        /* TODO
-      var ba = createVector(obs.b.x-obs.a.x, obs.b.y-obs.a.y);
-      var pa = createVector(p.x-obs.a.x, p.y-obs.a.y);
-      var pb = createVector(p.x-obs.b.x, p.y-obs.b.y);
+      var ba = vec3.create(); 
+      var pa = vec3.create(); 
+      var pb = vec3.create(); 
       
-      var len = ba.mag();
-      var dir = ba;
-      dir.normalize();    
+      vec3.sub(ba, obs.b, obs.a);
+      vec3.sub(pa, p, obs.a);
+      vec3.sub(pb, p, obs.b);
+      
+      var len = vec3.len(ba);
+      var dir = vec3.create();
+      vec3.normalize(dir, ba);
       
       var combinedRadius = obs.r + this.params.r;
         
-      var dirT = pa.dot(dir);
+      var force = vec3.create();
+      var dirT = vec3.dot(pa, dir);
       if (dirT > 0 && dirT < len) // might intercept middle part
       {
-        var perpx = pa.x - dir.x * dirT; 
-        var perpy = pa.y - dir.y * dirT; 
-        var perpSq = perpx*perpx + perpy*perpy;
-        if (perpSq < combinedRadius*combinedRadius) 
-        {
-          var scale = (combinedRadius*combinedRadius - perpSq);
-          var forcex = perpx * scale;
-          var forcey = perpy * scale;
-          return createVector(forcex, forcey);
-        }
+          // perp = pa - dir * dirT
+          var perp = vec3.create();
+          vec3.scale(perp, dir, -dirT); 
+          vec3.add(perp, pa, perp); 
+          var perpSq = vec3.sqrLen(perp);
+          if (perpSq < combinedRadius*combinedRadius) 
+          {
+              var scale = this.params.kIntersect * (combinedRadius*combinedRadius - perpSq);
+              vec3.scale(force, perp, scale);
+          }
       }
       else
       {
-        if (pa.magSq() < combinedRadius*combinedRadius) 
-        {
-          var scale = combinedRadius*combinedRadius - pa.magSq();
-          var forcex = pa.x * scale;
-          var forcey = pa.y * scale;
-          return createVector(forcex, forcey);
-        }
+          var magsq = vec3.sqrLen(pa);
+          if (magsq < combinedRadius*combinedRadius) 
+          {
+            var scale = this.params.kIntersect * (combinedRadius*combinedRadius - magsq);
+            vec3.scale(force, pa, scale);
+          }
         
-        if (pb.magSq() < combinedRadius*combinedRadius)
-        {
-          var scale = combinedRadius*combinedRadius - pb.magSq();
-          var forcex = pb.x * scale;
-          var forcey = pb.y * scale;
-          return createVector(forcex, forcey);
-        }
+          magsq = vec3.sqrLen(pb);
+          if (magsq < combinedRadius*combinedRadius)
+          {
+            var scale = this.params.kIntersect * (combinedRadius*combinedRadius - magsq);
+            vec3.scale(force, pb, scale);
+          }
       }
-      return createVector(0,0);
-      */
+      return force;
     }
 
     capsuleIntersect(p, v, obs)
     {
-        /*
-      var ba = createVector(obs.b.x-obs.a.x, obs.b.y-obs.a.y);
-      var pa = createVector(p.x-obs.a.x, p.y-obs.a.y);
-      var pb = createVector(p.x-obs.b.x, p.y-obs.b.y);
+      var ba = vec3.create(); 
+      var pa = vec3.create(); 
+      var pb = vec3.create(); 
       
-      var len = ba.mag();
-      var dir = ba;
-      dir.normalize();    
+      vec3.sub(ba, obs.b, obs.a);
+      vec3.sub(pa, p, obs.a);
+      vec3.sub(pb, p, obs.b);
+      
+      var len = vec3.len(ba);
+      var dir = vec3.create();
+      vec3.normalize(dir, ba);
       
       var combinedRadius = obs.r + this.params.r;
-      var dirT = pa.dot(dir);
+        
+      var dirT = vec3.dot(pa, dir);
       if (dirT > 0 && dirT < len) // might intercept middle part
       {
-        var perpx = pa.x - dir.x * dirT; 
-        var perpy = pa.y - dir.y * dirT; 
-        var perpSq = perpx*perpx + perpy*perpy;
-        if (perpSq <combinedRadius*combinedRadius) return true;
+          // perp = pa - dir * dirT
+          var perp = vec3.create();
+          vec3.scale(perp, dir, -dirT); 
+          vec3.add(perp, pa, perp); 
+          var perpSq = vec3.sqrLen(perp);
+          if (perpSq < combinedRadius*combinedRadius) 
+          {
+              return true;
+          }
       }
       else
       {
-        if (pa.magSq() < combinedRadius*combinedRadius) return true;
-        if (pb.magSq() < combinedRadius*combinedRadius) return true;
-      }*/
+          var magsq = vec3.sqrLen(pa);
+          if (magsq < combinedRadius*combinedRadius) return true;
+        
+          magsq = vec3.sqrLen(pb);
+          if (magsq < combinedRadius*combinedRadius) return true;
+      }
       return false;
-    }
-
-    // return time wihen v intercepts our obstacle
-    intersection(p, v, obs)
-    {
-        /*
-      var v_perp = createVector(-v.y, v.x); //<>//
-      var ba = createVector(obs.b.x-obs.a.x, obs.b.y-obs.a.y);
-      var pa = createVector(p.x-obs.a.x, p.y-obs.a.y);
-      
-      var result = new HitObject();
-      var test2_numerator = p5.Vector.dot(pa, v_perp);
-      var test2_denominator = p5.Vector.dot(ba, v_perp);
-      if (abs(test2_denominator) < 0.0001)
-      {
-        result.success = false;
-        return result;
-      }
-      
-      var t_segment = test2_numerator / test2_denominator;
-      if (t_segment < 0 || t_segment > 1.0) 
-      {
-        result.success = false;
-        return result;    
-      }
-      
-      var test1_numerator = ba.x*pa.y + ba.y*pa.x;
-      var test1_denominator = p5.Vector.dot(ba, v_perp);
-      if (abs(test1_denominator) < 0.0001)
-      {
-        result.success = false;
-        return result;
-      }
-      var t_ray = test1_numerator / test1_denominator;
-      result.success = t_ray > 0;
-      result.t = t_ray;
-      
-      //p5.Vector test = new p5.Vector(p.x + t_ray*v.x, p.y + t_ray*v.y, 0);
-      //p5.Vector test2 = new p5.Vector(obs.a.x + t_segment*ba.x, obs.a.y + t_segment*ba.y, 0);
-      return result;
-      */
     }
 
     dampReflect(which, obs)
@@ -453,7 +434,6 @@ class SPH2D
       this.velocities[which][1] = relfectVely;
       this.vh[which][0] = relfectVhx;
       this.vh[which][1] = relfectVhy;
-      console.log(this.vh[which]);
       
       // Damp the velocities
       this.velocities[which][0] *= DAMP; 
@@ -468,51 +448,44 @@ class SPH2D
       this.sh.pos[0] -= 2*flipDist*obsN[0];
       this.sh.pos[1] -= 2*flipDist*obsN[1];    
       this.sh.toData(which, this.data);
-      console.log("REFLECT "+this.sh.pos);
 
     }
 
     reflectAtBoundaries()
     {
-      // Boundaries of the computational domain
-      var XMIN = this.params.minx;
-      var XMAX = this.params.maxx;
-      var YMIN = this.params.miny;
-      var YMAX = this.params.maxy;
-      for (var i = 0; i < this.numSpheres; ++i) 
-      {
-          this.sh.fromData(i, this.data);
-          // ASN TODO: Create and save walls
-          if (this.sh.pos[0] < XMIN) this.dampReflect(i, new Obstacle(XMIN, YMIN, XMIN, YMAX));
-          if (this.sh.pos[0] > XMAX) this.dampReflect(i, new Obstacle(XMAX, YMIN, XMAX, YMAX));
-          if (this.sh.pos[1] < YMIN) this.dampReflect(i, new Obstacle(XMIN, YMIN, XMAX, YMIN));
-      }
+        for (var i = 0; i < this.numSpheres; ++i) 
+        {
+            this.sh.fromData(i, this.data);
+            if (this.sh.pos[0] < this.params.min[0]) 
+            {
+                this.dampReflect(i, this.leftWall); 
+            }
+            if (this.sh.pos[0] > this.params.max[0]) 
+            {
+                this.dampReflect(i, this.rightWall);
+            }
+            if (this.sh.pos[1] < this.params.min[1]) 
+            {
+                this.dampReflect(i, this.bottomWall); 
+            }
+        }
     }
 
     clearObstacles()
     {
-        obstacles = [];
+        this.obstacles = [];
     }
 
-    pushObstacle(start, end)
+    pushObstacle(start, end, r = 0.15)
     {
-        // ASN TODO: Fix for webGL/new world size
-        /*
-        newObstacle.b = createVector(mouseX, mouseY);
-        var dx = newObstacle.a.x - newObstacle.b.x;
-        var dy = newObstacle.a.y - newObstacle.b.y;
-        var len = dx*dx + dy*dy;
-        if (len > 100)
-        {
-            obstacles.push(newObstacle);
-        }*/
+        this.obstacles.push(new Obstacle(start,end, r));
     }
 
     popObstacle()
     {
         if (this.obstacles.length > 0) 
         {
-            obstacles.splice(obstacles.length - 1, 1);
+            this.obstacles.splice(this.obstacles.length - 1, 1);
         }
     }
 
