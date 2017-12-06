@@ -112,7 +112,7 @@ function initHandTexture()
   handTextureSize = numHands * 2;
 
    console.log('hand.data', hand.data)
-debugger
+
    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, handTextureSize, 1, 0, gl.RGBA, gl.FLOAT, hand.data);
    // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, handTextureSize, 1, 0, gl.RGBA, gl.FLOAT, hand.data);
    // gl.bindTexture(gl.TEXTURE_2D, null);
@@ -228,7 +228,9 @@ function drawScene()
    gl.uniform1i(uSphereInfo, 0);
 
    var uHandInfo = gl.getUniformLocation(shaderProgram, "hand_info");
-   gl.uniform1i(uHandInfo, 0);
+   gl.uniform1i(uHandInfo, 1);
+
+
 
    gl.drawArrays(gl.TRIANGLE_FAN, 0, squareVertexPositionBuffer.numItems);
 }

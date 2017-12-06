@@ -50,8 +50,8 @@ class HandHelper
     // this.data[i + 1] = 0.3;
     // this.data[i + 2] = 0.3;
 
-    this.data[i + 0] = 0.0;
-    this.data[i + 1] = 1.0;
+    this.data[i + 0] = 1.0;
+    this.data[i + 1] = 0.0;
     this.data[i + 2] = 0.0;
 
     this.data[i + 3] = 1.0;

@@ -182,7 +182,7 @@ void main ()
   // float palm_t;
   // palmIntersection(camera_pos, normalized_view_dir, palm_pos_rad.xyz, palm_pos_rad.w, palm_t);
   // if (palm_t >= 0.0) {
-  vec4 d_palm_color = vec4(0.0, palm_color.y, 0.0, 1.0);
+  vec4 d_palm_color = vec4(palm_color.x, palm_color.y, palm_color.z, 1.0);
   // }
 
 
