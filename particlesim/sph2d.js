@@ -201,8 +201,8 @@ class SPH2D
         var r = vec3.len(spherePos);
         vec3.scale(force, spherePos, -this.params.dt); 
 
-        //vec3.set(this.accelerations[i], 0, this.params.g, 0);
-        vec3.set(this.accelerations[i], force[0], force[1], 0);
+        vec3.set(this.accelerations[i], 0, this.params.g, 0);
+        //vec3.set(this.accelerations[i], force[0], force[1], 0);
 
         for (var j = 0; j < this.obstacles.length; j++)
         {
