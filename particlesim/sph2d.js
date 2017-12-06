@@ -3,15 +3,15 @@ class Params
    constructor() 
    {
       this.h = 0.5; // particle neighborhood size
-      this.r = 0.15; // particle size
+      this.r = 0.1; // particle size
       this.dt = 0.05; // time step
-      this.rho0 = 1000; // reference density
-      this.k = 800; //bulk modulus
-      this.mu = 9000.1; // viscosity
-      this.g = -0.01; // gravity strength
+      this.rho0 = 1; // reference density
+      this.k = 0.1; //bulk modulus
+      this.mu = 1.1; // viscosity
+      this.g = -0.1; // gravity strength
       this.min = vec3.fromValues(-2, -1.25, -2);
       this.max = vec3.fromValues(2, 1.25, 2);
-      this.maxacc = 100;
+      this.maxacc = 0.5;
       this.kIntersect = 100;
    }  
 };
@@ -60,7 +60,7 @@ class SPH2D
       this.bottomWall = new Obstacle(bottomWallStart, bottomWallEnd, 0);
       
       // create some obstacles to test
-      this.pushObstacle(vec3.fromValues(-2,1,-2), vec3.fromValues(2,-2,-2));
+      //this.pushObstacle(vec3.fromValues(-2,1,-2), vec3.fromValues(2,-2,-2));
       
       this.setupSpheres();
       this.init();
@@ -118,8 +118,8 @@ class SPH2D
             this.computeAccel();
             this.leapfrogStep();
 
-            this.sh.fromData(0, this.data);
-            console.log(this.sh.pos[1]);
+            //this.sh.fromData(0, this.data);
+            //console.log(this.sh.pos[1]);
         }
     }
 
@@ -205,7 +205,6 @@ class SPH2D
       }
       
       // Constants for interaction term
-      /*
       var C0 = mass / 3.14 / ( (h2)*(h2) );
       var Cp = 15*k;
       var Cv = -40*mu;
@@ -251,7 +250,7 @@ class SPH2D
             vec2.sub(this.accelerations[j], this.accelerations[i], scrap1);
           }
         }
-      }*/
+      }
     }
 
     leapfrogStep()
@@ -490,29 +489,6 @@ class SPH2D
     }
 
 };
-
-/* how to draw
-  for (var i = 0; i < this.numSpheres; i++)
-  {
-    var p = this.positions[i];
-    var c = this.rho[i]/this.maxdensity;
-    if (this.intersection[i])
-    {
-      fill(c*255, 255, 0);
-    }
-    else
-    {
-      fill(c*255, 0, 0);
-    }
-    ellipse(p.x, p.y, this.params.r*2, this.params.r*2);
-  }
-  
-  stroke(255);
-  for (var i = 0; i < obstacles.length; i++)
-  {
-    line(obstacles[i].a.x, obstacles[i].a.y, obstacles[i].b.x, obstacles[i].b.y);
-  }
- */ 
 
 function createSystem(numSpheres, maxSpheres)
 {
