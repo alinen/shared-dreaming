@@ -90,7 +90,7 @@ void deform1(in vec3 p, in float theta, out float d, out float maxDisplacement)
    maxDisplacement = 0.2 * 2.0;
 }
 
-void surfaceNormal(in float r, in vec3 p, out vec3 n, in vec3 sphere_center)
+void surfaceNormal(in vec3 p, out vec3 n)
 {
   vec3 sphere_1_pos = vec3(cos(theta), sin(theta), 0.0) + sphere_center;
   vec3 sphere_2_pos = vec3(cos(-theta), sin(-theta), 0.0) + sphere_center;
@@ -125,6 +125,14 @@ void surfaceNormal(in float r, in vec3 p, out vec3 n, in vec3 sphere_center)
   // n = -2.0 * a * b * p * exp(-b * pow(r, 2.0));
 }
 
+float density1(float r)
+{
+  float a = 1.0;
+  float b = 0.5 * 100.0;
+
+  return a * exp(-b * r * r);
+}
+
 void blob(in vec3 p, in float theta, out float d, in vec3 sphere_center)
 {
   vec3 sphere_1_pos = vec3(cos(theta), sin(theta), 0.0) + sphere_center;
@@ -142,13 +150,20 @@ void blob(in vec3 p, in float theta, out float d, in vec3 sphere_center)
   d = dr2 + dr1;
 }
 
-void sphereIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 sphere_center, in float radius, in float theta, out float t)
+void simple(in vec3 p, in vec3 sphere_center, out float d)
+{
+  float r = length(sphere_center - p);
+  d = density1(r);
+}
+
+void sphereIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 sphere_center, in float radius, out float t)
 {
   t = -1.0;
   for (float d = 0.5; d < 4.0; d += 0.01) {
     vec3 p = ray_start + d * ray_dir;
     float distance = 0.0;
-    blob(p, theta, distance, sphere_center);
+    
+    simple(p, sphere_center, distance);
     if (distance > 0.01) {
         t = d;
         return;
@@ -202,7 +217,28 @@ void main ()
   camera_pos = m2 * m * (camera_pos - sphere_center) + sphere_center;
 
   float t;
-  sphereIntersection(camera_pos, normalized_view_dir, sphere_center, radius, theta, t);
+  vec4 hit_sphere_pos_rad = vec4(0.0, 0.0, 0.0, 0.0);
+  vec4 hit_sphere_rgb = vec4(0.0, 1.0, 0.0, 0.0);
+  for (float i = 0.0; i < 500.0; i+=1.0) { // need to hardcode loop
+    float startIndex = i * 3.0;
+
+    float tex_coord_1 = (startIndex + 0.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
+    float tex_coord_2 = (startIndex + 1.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
+    float tex_coord_3 = (startIndex + 2.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
+    float tex_coord_y = 0.5;
+
+    vec4 pos_rad = texture2D(sphere_info, vec2(tex_coord_1, tex_coord_y));
+    vec4 vel = texture2D(sphere_info, vec2(tex_coord_2, tex_coord_y));
+    vec4 rgb = texture2D(sphere_info, vec2(tex_coord_3, tex_coord_y));
+
+    sphereIntersection(camera_pos, normalized_view_dir, pos_rad.xyz, pos_rad.w, t);
+
+    if (t >= 0.0) {
+      hit_sphere_pos_rad = pos_rad;
+      hit_sphere_rgb = rgb;
+      break;
+    }
+  }
 
   if (t < 0.0) {
     vec4 color;
@@ -216,7 +252,7 @@ void main ()
     // vec3 sphere_normal_p1 = normalize(point1 - sphere_center); // sphere normal
 
     vec3 sphere_normal_p1;
-    surfaceNormal(t, camera_pos + t * normalized_view_dir, sphere_normal_p1, sphere_center);
+    surfaceNormal(point1, sphere_normal_p1);
 
     // light
     vec3 light_pos = vec3(2.0, 2.0, 2.0);
