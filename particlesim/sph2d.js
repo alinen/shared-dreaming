@@ -8,7 +8,7 @@ class Params
       this.rho0 = 1; // reference density
       this.k = 0.1; //bulk modulus
       this.mu = 1.1; // viscosity
-      this.g = -0.1; // gravity strength
+      this.g = -0.0; // gravity strength
       this.min = vec3.fromValues(-2, -1.25, -2);
       this.max = vec3.fromValues(2, 1.25, 2);
       this.maxacc = 0.5;
@@ -87,7 +87,7 @@ class SPH2D
    init()
    {
 
-      var numcols = 5;
+      var numcols = 18;
       var margin = this.params.r * 2.2;
       for (var i = 0; i < this.numSpheres; i++)
       {
@@ -97,7 +97,7 @@ class SPH2D
          this.sh.fromData(i, this.data);
          this.sh.radius = this.params.r; 
          this.sh.pos[0] = -2.0 + this.params.r+cellj*margin;
-         this.sh.pos[1] = this.params.r+celli*margin + 1.25;
+         this.sh.pos[1] = this.params.r-celli*margin+1;
          this.sh.pos[2] = -2.0;
          this.sh.toData(i, this.data);
          
@@ -246,8 +246,8 @@ class SPH2D
             vec3.scale(scrap1, dir, wp);
             vec3.scale(scrap2, dv, wv);
             vec3.add(scrap1, scrap1, scrap2);
-            vec2.add(this.accelerations[i], this.accelerations[i], scrap1);
-            vec2.sub(this.accelerations[j], this.accelerations[i], scrap1);
+            //vec2.add(this.accelerations[i], this.accelerations[i], scrap1);
+            //vec2.sub(this.accelerations[j], this.accelerations[i], scrap1);
           }
         }
       }
