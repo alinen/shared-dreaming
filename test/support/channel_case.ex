@@ -27,10 +27,6 @@ defmodule SharedDreamingWeb.ChannelCase do
 
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(SharedDreaming.Repo)
-    unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(SharedDreaming.Repo, {:shared, self()})
-    end
     :ok
   end
 

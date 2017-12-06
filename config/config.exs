@@ -5,10 +5,6 @@
 # is restricted to this project.
 use Mix.Config
 
-# General application configuration
-config :shared_dreaming,
-  ecto_repos: [SharedDreaming.Repo]
-
 # Configures the endpoint
 config :shared_dreaming, SharedDreamingWeb.Endpoint,
   url: [host: "localhost"],

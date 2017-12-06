@@ -8,12 +8,3 @@ config :shared_dreaming, SharedDreamingWeb.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
-
-# Configure your database
-config :shared_dreaming, SharedDreaming.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
-  database: "shared_dreaming_test",
-  hostname: "localhost",
-  pool: Ecto.Adapters.SQL.Sandbox
