@@ -8,11 +8,11 @@ class Params
       this.rho0 = 1; // reference density
       this.k = 0.1; //bulk modulus
       this.mu = 1.1; // viscosity
-      this.g = -0.0; // gravity strength
+      this.g = -0.01; // gravity strength
       this.min = vec3.fromValues(-2, -1.25, -2);
       this.max = vec3.fromValues(2, 1.25, 2);
       this.maxacc = 0.5;
-      this.kIntersect = 100;
+      this.kIntersect = 10;
    }  
 };
 
@@ -193,9 +193,17 @@ class SPH2D
       var spherePos = vec3.create();
       for (var i = 0; i < this.numSpheres; ++i) 
       {
-        vec3.set(this.accelerations[i], 0, this.params.g, 0);
         this.sh.fromData(i, this.data);
         vec3.set(spherePos, this.sh.pos[0], this.sh.pos[1], this.sh.pos[2]);
+        
+        // put gravity at the center
+        var force = vec3.create();
+        var r = vec3.len(spherePos);
+        vec3.scale(force, spherePos, -r*0.01); 
+
+        //vec3.set(this.accelerations[i], 0, this.params.g, 0);
+        vec3.set(this.accelerations[i], force[0], force[1], 0);
+
         for (var j = 0; j < this.obstacles.length; j++)
         {
             // compute repellent force
