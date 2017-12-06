@@ -1,0 +1,13 @@
+var vertexProgram = `
+  precision mediump float;
+  attribute vec3 aVertexPosition;
+  uniform mat4 uMVMatrix;
+  uniform mat4 uPMatrix;
+  varying float v_depth;
+
+  void main() {
+     gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+     gl_PointSize = 1.0;
+     v_depth = gl_Position.z / gl_Position.w;
+  }
+`; 
