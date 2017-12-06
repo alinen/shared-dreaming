@@ -126,7 +126,7 @@ void main ()
   vec4 hit_sphere_pos_rad = vec4(0.0, 0.0, 0.0, 0.0);
   vec4 hit_sphere_rgb = vec4(0.0, 1.0, 0.0, 0.0);
 
-  for (float i = 0.0; i < 250.0; i+=1.0) { // need to hardcode loop
+  for (float i = 0.0; i < 500.0; i+=1.0) { // need to hardcode loop
     float startIndex = i * 3.0;
 
     float tex_coord_1 = (startIndex + 0.0)/size_of_texture + 1.0/(2.0 * size_of_texture);

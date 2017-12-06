@@ -2,12 +2,12 @@ class Params
 {
    constructor() 
    {
-      this.h = 0.5; // particle neighborhood size
-      this.r = 0.1; // particle size
+      this.h = 0.15; // particle neighborhood size
+      this.r = 0.05; // particle size
       this.dt = 0.05; // time step
-      this.rho0 = 1; // reference density
-      this.k = 0.1; //bulk modulus
-      this.mu = 1.1; // viscosity
+      this.rho0 = 1.5; // reference density
+      this.k = 0.005; //bulk modulus
+      this.mu = 0.001; // viscosity
       this.g = -0.01; // gravity strength
       this.min = vec3.fromValues(-2, -1.25, -2);
       this.max = vec3.fromValues(2, 1.25, 2);
@@ -199,10 +199,10 @@ class SPH2D
         // put gravity at the center
         var force = vec3.create();
         var r = vec3.len(spherePos);
-        vec3.scale(force, spherePos, -this.params.dt); 
+        vec3.scale(force, spherePos, this.params.g); 
+        vec3.set(this.accelerations[i], force[0], force[1], 0);
 
-        vec3.set(this.accelerations[i], 0, this.params.g, 0);
-        //vec3.set(this.accelerations[i], force[0], force[1], 0);
+        //vec3.set(this.accelerations[i], 0, this.params.g, 0);
 
         for (var j = 0; j < this.obstacles.length; j++)
         {
@@ -254,8 +254,8 @@ class SPH2D
             vec3.scale(scrap1, dir, wp);
             vec3.scale(scrap2, dv, wv);
             vec3.add(scrap1, scrap1, scrap2);
-            //vec2.add(this.accelerations[i], this.accelerations[i], scrap1);
-            //vec2.sub(this.accelerations[j], this.accelerations[i], scrap1);
+            vec2.add(this.accelerations[i], this.accelerations[i], scrap1);
+            vec2.sub(this.accelerations[j], this.accelerations[i], scrap1);
           }
         }
       }

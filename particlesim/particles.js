@@ -7,7 +7,7 @@ var lastTime = 0;
 var numSpheres = 50;
 var textureId = 0;
 var gl;
-var system = createSystem(198, 250); 
+var system = createSystem(498, 500); 
 
 function initGL(canvas)
 {
