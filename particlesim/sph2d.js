@@ -199,7 +199,7 @@ class SPH2D
         // put gravity at the center
         var force = vec3.create();
         var r = vec3.len(spherePos);
-        vec3.scale(force, spherePos, -r*0.01); 
+        vec3.scale(force, spherePos, -this.params.dt); 
 
         //vec3.set(this.accelerations[i], 0, this.params.g, 0);
         vec3.set(this.accelerations[i], force[0], force[1], 0);
