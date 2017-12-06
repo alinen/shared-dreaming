@@ -88,27 +88,27 @@ void sphereIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 sphere_cente
   }
 }
 
-// void palmIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 sphere_center, in float radius, out float t)
-// {
-//   vec3 sphere_dir = sphere_center - ray_start;            // intersection test
-//   float sphere_len = length(sphere_center - ray_start);            // intersection test
-//   float projection = dot(sphere_dir, ray_dir); // intersection test
-//   vec3 dir_perpendicular = sphere_dir - (ray_dir * projection); // intersection test
-//   float len_dir_perpend = length(dir_perpendicular);       // intersection test
+void palmIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 sphere_center, in float radius, out float t)
+{
+  vec3 sphere_dir = sphere_center - ray_start;            // intersection test
+  float sphere_len = length(sphere_center - ray_start);            // intersection test
+  float projection = dot(sphere_dir, ray_dir); // intersection test
+  vec3 dir_perpendicular = sphere_dir - (ray_dir * projection); // intersection test
+  float len_dir_perpend = length(dir_perpendicular);       // intersection test
 
-//   // if (len_dir_perpend > radius) {
-//   //   t = -1.0;
-//   //   return;
-//   // }
+  // if (len_dir_perpend > radius) {
+  //   t = -1.0;
+  //   return;
+  // }
 
-//   // float intersection_dist = sqrt(radius * radius - len_dir_perpend * len_dir_perpend);
-//   // if (sphere_len > radius) {
-//   //   float point1_len = projection - intersection_dist;
-//   //   t = point1_len;
-//   // } else {
-//   //   t = projection + intersection_dist;
-//   // }
-// }
+  // float intersection_dist = sqrt(radius * radius - len_dir_perpend * len_dir_perpend);
+  // if (sphere_len > radius) {
+  //   float point1_len = projection - intersection_dist;
+  //   t = point1_len;
+  // } else {
+  //   t = projection + intersection_dist;
+  // }
+}
 
 void refractionDirection(in float refraction_coef, in vec3 input_dir, in vec3 normal, out vec3 refraction_dir)
 {
@@ -171,21 +171,22 @@ void main ()
     }
   }
 
-  // float sIndex = 0.0;
-  // float tex_coord_y = 0.5;
-  // float palm_coord_1 = (sIndex + 0.0)/(300.0*32.0) + 1.0/(2.0 * (300.0*32.0));
-  // float palm_coord_2 = (sIndex + 1.0)/(300.0*32.0) + 1.0/(2.0 * (300.0*32.0));
+  float sIndex = 0.0;
+  float palm_coord_y = 0.5;
+  float texel = 1.0 / size_of_hand_texture;
+  float palm_coord_1 = (sIndex + 0.0)/size_of_hand_texture + texel * 0.5;
+  float palm_coord_2 = (sIndex + 1.0)/size_of_hand_texture + texel * 0.5;
 
-  // vec4 palm_pos_rad = texture2D(hand_info, vec2(0.0, 0.0));
-  // // vec4 palm_pos_rad = texture2D(hand_info, vec2(palm_coord_1, tex_coord_y));
-  // vec4 palm_color = texture2D(hand_info, vec2(0.0, 0.0));
-  // // vec4 palm_color = texture2D(hand_info, vec2(palm_coord_2, tex_coord_y));
+  vec4 palm_pos_rad = texture2D(hand_info, vec2(0.0, 0.0));
+  // vec4 palm_pos_rad = texture2D(hand_info, vec2(palm_coord_1, tex_coord_y));
+  vec4 palm_color = texture2D(hand_info, vec2(palm_coord_1, palm_coord_y));
+  // vec4 palm_color = texture2D(hand_info, vec2(palm_coord_2, tex_coord_y));
 
-  // // float palm_t;
-  // // palmIntersection(camera_pos, normalized_view_dir, palm_pos_rad.xyz, palm_pos_rad.w, palm_t);
-  // // if (palm_t >= 0.0) {
-  // //   // palm_color = vec4(palm_color.x, palm_color.y, palm_color.z, palm_color.a);
-  // // }
+  // float palm_t;
+  // palmIntersection(camera_pos, normalized_view_dir, palm_pos_rad.xyz, palm_pos_rad.w, palm_t);
+  // if (palm_t >= 0.0) {
+  vec4 d_palm_color = vec4(palm_color.x, palm_color.y, palm_color.z, palm_color.a);
+  // }
 
 
   if (t < 0.0) {
@@ -242,7 +243,7 @@ void main ()
     vec4 refraction_color;
     computeColor(point3, normalize(point3_dir), refraction_color); // second sphere intersection
 
-    gl_FragColor = 0.5*hit_sphere_rgb + specular_color + 0.5*refraction_color;
+    gl_FragColor = d_palm_color;
     // gl_FragColor = diffuse_k * vec4(0.36, 0.40, 0.650, 1.0) + ambient_color + specular_color + reflection + refraction_color;
   }
 

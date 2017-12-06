@@ -12,6 +12,17 @@ class HandHelper
     this.frameIndex = 1;
 
     this.data = new Float32Array(300 * 32);
+    var i = 0;
+    this.data[i + 0] = 0.0;
+    this.data[i + 1] = 1.0;
+    this.data[i + 2] = 0.0;
+
+    this.data[i + 3] = 1.0;
+
+    this.data[i + 4] = 1.0;
+    this.data[i + 5] = 0.0;
+    this.data[i + 6] = 0.0;
+    this.data[i + 7] = 1.0;
   }
 
   fromData(idx, data) {
@@ -35,16 +46,16 @@ class HandHelper
     // this.data[i + 1] = 0.3;
     // this.data[i + 2] = 0.3;
 
-    this.data[i + 0] = this.palmPos[0];
-    this.data[i + 1] = this.palmPos[1];
-    this.data[i + 2] = this.palmPos[2];
+    this.data[i + 0] = 0.0;
+    this.data[i + 1] = 1.0;
+    this.data[i + 2] = 0.0;
 
-    this.data[i + 3] = this.radius;
-
-    this.data[i + 0] = this.rgba[0];
-    this.data[i + 1] = this.rgba[1];
-    this.data[i + 2] = this.rgba[2];
     this.data[i + 3] = 1.0;
+
+    this.data[i + 4] = 1.0;
+    this.data[i + 5] = 0.0;
+    this.data[i + 6] = 0.0;
+    this.data[i + 7] = 1.0;
     // this.data[i + 7] = this.rgba[3];
   }
 
@@ -55,6 +66,7 @@ class HandHelper
         this.radius = 1.0;
         this.rgba = [0.0, 0.0, 0.0, 1.0];
         this.toData(0);
+        // console.log('this.data', this.data)
       }
     }
   }
@@ -88,7 +100,7 @@ class HandHelper
             _this.boundingBox = _this.frames[1][4][1];
 
             _this.update(1, []);
-            initHandTexture();
+            // initHandTexture();
           } else {
             console.error('Leap Playback: "' + url + '" seems to be unreachable or the file is empty.');
           }

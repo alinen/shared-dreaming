@@ -8,10 +8,10 @@ var numSpheres = 50;
 var textureId = 0;
 var handTextureId = 1;
 var gl;
-var system = new Bubbles(10, 20);
+var system = new Bubbles(50, 100);
 var hand = new HandHelper();
 
-var handTextureSize = 1 * 2;
+var handTextureSize = 1 * 1024;
 
 function initGL(canvas)
 {
@@ -78,7 +78,7 @@ function initHandRecording()
 
 function initTexture()
 {
-   var num_of_floats = system.maxNumSpheres * 3 * 4;
+   // var num_of_floats = system.maxNumSpheres * 3 * 4;
 
    textureId = gl.createTexture();
    gl.bindTexture(gl.TEXTURE_2D, textureId);
@@ -95,6 +95,8 @@ function initTexture()
 
 function initHandTexture()
 {
+  handTextureId = gl.createTexture();
+
    gl.bindTexture(gl.TEXTURE_2D, handTextureId);
    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -211,7 +213,7 @@ function drawScene()
 
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, handTextureId);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, textureSize, 1, 0, gl.RGBA, gl.FLOAT, hand.data);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, handTextureSize, 1, 0, gl.RGBA, gl.FLOAT, hand.data);
 
 
    var uSphereInfo = gl.getUniformLocation(shaderProgram, "sphere_info");
@@ -244,8 +246,8 @@ function webGLStart()
   initShaders();
   initBuffers();
   initTexture();
+  initHandTexture();
 
-  handTextureId = gl.createTexture();
 
   gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
   gl.pixelStorei(gl.PACK_ALIGNMENT, 1);
