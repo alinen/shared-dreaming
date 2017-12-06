@@ -5,16 +5,20 @@ class HandHelper
     this.radius = 0.0;
     this.rgba = [0.0, 0.0, 0.0, 0.0];
 
-    this.data;
+    this.data = [];
     this.metadata;
     this.timeDelta;
     this.frames;
     this.frameIndex = 1;
 
-    this.data = new Float32Array(300 * 32);
+    this.jsIsDumb();
+  }
+
+  jsIsDumb() {
+    this.data = new Float32Array(numHands * 2 * 4);
     var i = 0;
-    this.data[i + 0] = 0.0;
-    this.data[i + 1] = 1.0;
+    this.data[i + 0] = 1.0;
+    this.data[i + 1] = 0.0;
     this.data[i + 2] = 0.0;
 
     this.data[i + 3] = 1.0;

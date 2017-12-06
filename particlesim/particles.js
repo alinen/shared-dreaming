@@ -9,9 +9,8 @@ var textureId = 0;
 var handTextureId = 1;
 var gl;
 var system = new Bubbles(50, 100);
+var numHands = 1;
 var hand = new HandHelper();
-
-var handTextureSize = 1 * 1024;
 
 function initGL(canvas)
 {
@@ -78,10 +77,13 @@ function initHandRecording()
 
 function initTexture()
 {
-   // var num_of_floats = system.maxNumSpheres * 3 * 4;
-
    textureId = gl.createTexture();
+
+   // gl.enable(gl.TEXTURE_2D);
+
+   // gl.activeTexture(gl.TEXTURE0);
    gl.bindTexture(gl.TEXTURE_2D, textureId);
+
    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -90,23 +92,30 @@ function initTexture()
    textureSize = system.maxNumSpheres * 3;
 
    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, textureSize, 1, 0, gl.RGBA, gl.FLOAT, system.data);
-   gl.bindTexture(gl.TEXTURE_2D, null);
+   // gl.bindTexture(gl.TEXTURE_2D, null);
 }
 
 function initHandTexture()
 {
   handTextureId = gl.createTexture();
 
+   // gl.enable(gl.TEXTURE_2D);
+
+   // gl.activeTexture(gl.TEXTURE1);
    gl.bindTexture(gl.TEXTURE_2D, handTextureId);
+
    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-   console.log('hand.data', hand.data)
+  handTextureSize = numHands * 2;
 
+   console.log('hand.data', hand.data)
+debugger
    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, handTextureSize, 1, 0, gl.RGBA, gl.FLOAT, hand.data);
-   gl.bindTexture(gl.TEXTURE_2D, null);
+   // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, handTextureSize, 1, 0, gl.RGBA, gl.FLOAT, hand.data);
+   // gl.bindTexture(gl.TEXTURE_2D, null);
 }
 
 function createGlBuffer(values, itemSize, numItems, type)
@@ -215,7 +224,6 @@ function drawScene()
     gl.bindTexture(gl.TEXTURE_2D, handTextureId);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, handTextureSize, 1, 0, gl.RGBA, gl.FLOAT, hand.data);
 
-
    var uSphereInfo = gl.getUniformLocation(shaderProgram, "sphere_info");
    gl.uniform1i(uSphereInfo, 0);
 
@@ -248,9 +256,7 @@ function webGLStart()
   initTexture();
   initHandTexture();
 
-
   gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
-  gl.pixelStorei(gl.PACK_ALIGNMENT, 1);
 
   lastTime =  new Date().getTime();
   gl.clearColor(0.1, 0.1, 0.1, 1.0);

@@ -175,17 +175,14 @@ void main ()
   float palm_coord_y = 0.5;
   float texel = 1.0 / size_of_hand_texture;
   float palm_coord_1 = (sIndex + 0.0)/size_of_hand_texture + texel * 0.5;
-  float palm_coord_2 = (sIndex + 1.0)/size_of_hand_texture + texel * 0.5;
+  float palm_coord_2 = (sIndex + 4.0)/size_of_hand_texture + texel * 0.5;
 
-  vec4 palm_pos_rad = texture2D(hand_info, vec2(0.0, 0.0));
-  // vec4 palm_pos_rad = texture2D(hand_info, vec2(palm_coord_1, tex_coord_y));
   vec4 palm_color = texture2D(hand_info, vec2(palm_coord_1, palm_coord_y));
-  // vec4 palm_color = texture2D(hand_info, vec2(palm_coord_2, tex_coord_y));
 
   // float palm_t;
   // palmIntersection(camera_pos, normalized_view_dir, palm_pos_rad.xyz, palm_pos_rad.w, palm_t);
   // if (palm_t >= 0.0) {
-  vec4 d_palm_color = vec4(palm_color.x, palm_color.y, palm_color.z, palm_color.a);
+  vec4 d_palm_color = vec4(0.0, palm_color.y, 0.0, 1.0);
   // }
 
 
