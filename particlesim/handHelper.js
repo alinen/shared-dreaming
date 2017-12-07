@@ -1,6 +1,6 @@
 class HandHelper
 {
-  constructor() {
+  constructor(jsonName = undefined) {
     this.palmPos = [0.0, 0.0, 0.0];
     this.radius = 0.0;
     this.rgba = [0.0, 0.0, 0.0, 0.0];
@@ -12,6 +12,11 @@ class HandHelper
     this.rgba = [1,1,1,1];
 
     this.init();
+
+    if (jsonName !== undefined)
+    {
+        this.getFrameData(jsonName);
+    }
   }
 
   init() {
@@ -38,14 +43,18 @@ class HandHelper
 // this.center (3) [0, 200, 0]
 // this.boundingBox (3) [235.247, 235.247, 147.751]
     var worldCenter = [0.0, 0.0, -2.0];
-    var normX = ((positionValues[0] - this.center[0]) / this.boundingBox[0]) * 2.0 + worldCenter[0];
-    var normY = ((positionValues[1] - this.center[1]) / this.boundingBox[1]) * 2.0 + worldCenter[1];
-    var normZ = ((positionValues[2] - this.center[2]) / this.boundingBox[2]) * 2.0 + worldCenter[2];
+    var normX = ((positionValues[0] - this.center[0]) / this.boundingBox[0]);
+    var normY = ((positionValues[1] - this.center[1]) / this.boundingBox[1]);
+    var normZ = ((positionValues[2] - this.center[2]) / this.boundingBox[2]);
 
     // rotate hand = - 90
-    var angle = 90 * 180.0/Math.PI;
-    var rotX = Math.cos(angle) * normX - Math.sin(angle) * normY;
-    var rotY = Math.sin(angle) * normX + Math.sin(angle) * normY;
+    //var angle = -90 * 180.0/Math.PI;
+    //var x = Math.cos(angle) * normX - Math.sin(angle) * normY;
+    //var y = Math.sin(angle) * normX + Math.sin(angle) * normY;
+
+    normX = normX * 2.0 + worldCenter[0];
+    normY = normY * 2.0 + worldCenter[1];
+    normZ = normZ * 2.0 + worldCenter[1];
 
     return [normX, normY, normZ];
   }
@@ -61,7 +70,6 @@ class HandHelper
         if (Object.keys(frame['right']).length !== 0)
         {
             var palmPos = this.normalizeValues(frame['right']['palmPosition']);
-            console.log("RIGHT PALM "+palmPos);
             this.toData(idx++, this.data, palmPos, this.rgba, this.radius);
 
             for (var i = 0; i < 5; i++)
@@ -95,8 +103,8 @@ class HandHelper
     }
   }
 
-  getFrameData() {
-    var url = "https://raw.githubusercontent.com/alinen/shared-dreaming/hand-texture/leapMotion_1512650952462.json";
+  getFrameData(jsonName) {
+    var url = jsonName; 
     var xhr = new XMLHttpRequest();
     var _this = this;
 

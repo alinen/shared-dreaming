@@ -16,7 +16,8 @@ var handTextureId = 1;
 var gl;
 var system = new Bubbles(50, 100);
 var numHandData = 2 * (4*5 + 1); // 2 hands * ( 4 fingerJoints * 5 fingers + palmPos)
-var hand = new HandHelper();
+var recording = "https://raw.githubusercontent.com/alinen/shared-dreaming/hand-texture/leapMotion_1512650952462.json";
+var hand = new HandHelper(recording);
 
 function initGL(canvas)
 {
@@ -74,11 +75,6 @@ function initShaders()
    var fragmentBackground = getShader(gl, fragmentProgram, gl.FRAGMENT_SHADER);
    var vertexShader = getShader(gl, vertexProgram, gl.VERTEX_SHADER);
    shaderProgram = initShader(fragmentBackground, vertexShader);
-}
-
-function initHandRecording()
-{
-  hand.getFrameData();
 }
 
 function initTexture()
@@ -246,7 +242,6 @@ function tick()
 function webGLStart()
 {
   var canvas = document.getElementById("canvas");
-  initHandRecording();
   initGL(canvas);
   initShaders();
   initBuffers();

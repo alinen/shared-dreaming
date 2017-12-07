@@ -142,10 +142,11 @@ void main ()
   vec3 view_dir = v_pos.xyz - camera_pos;
   vec3 normalized_view_dir = normalize(view_dir);
 
-  float t;
+  float t = -1.0;
   vec4 hit_sphere_pos_rad = vec4(0.0, 0.0, 0.0, 0.0);
   vec4 hit_sphere_rgb = vec4(0.0, 1.0, 0.0, 0.0);
 
+  /*
   for (float i = 0.0; i < 50.0; i+=1.0) { // need to hardcode loop
     float startIndex = i * 3.0;
 
@@ -165,7 +166,7 @@ void main ()
       hit_sphere_rgb = rgb;
       break;
     }
-  }
+  }*/
 
   float sIndex = 0.0;
   for (float i = 0.0; i < 2.0 * (4.0*5.0 + 1.0); i+=1.0)
@@ -175,6 +176,7 @@ void main ()
       float palm_coord_1 = (startIndex + 0.0)/size_of_hand_texture + texel * 0.5;
       float palm_coord_2 = (startIndex + 1.0)/size_of_hand_texture + texel * 0.5;
       float palm_coord_y = 0.5;
+
 
       vec4 palm_pos_rad = texture2D(hand_info, vec2(palm_coord_1, palm_coord_y));
       vec4 palm_color = texture2D(hand_info, vec2(palm_coord_2, palm_coord_y));
