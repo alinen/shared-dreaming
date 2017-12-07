@@ -22,12 +22,6 @@
         "frames": []
       };
 
-      var myFrame = {
-        "timestamp": 1234,
-        "right": {},
-        "left": {}
-      };
-
       var startdate = new Date();
       var startTime = startdate.getTime() * 0.001;
 
@@ -37,6 +31,11 @@
 
         // frame callback is run before individual frame components
         frame: function(frame) {
+            var myFrame = {
+              "timestamp": 1234,
+              "right": {},
+              "left": {}
+            };
             var handString = '';
 
             var date = new Date();
