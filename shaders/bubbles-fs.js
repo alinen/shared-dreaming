@@ -146,7 +146,6 @@ void main ()
   vec4 hit_sphere_pos_rad = vec4(0.0, 0.0, 0.0, 0.0);
   vec4 hit_sphere_rgb = vec4(0.0, 1.0, 0.0, 0.0);
 
-  /*
   for (float i = 0.0; i < 50.0; i+=1.0) { // need to hardcode loop
     float startIndex = i * 3.0;
 
@@ -166,7 +165,7 @@ void main ()
       hit_sphere_rgb = rgb;
       break;
     }
-  }*/
+  }
 
   float sIndex = 0.0;
   for (float i = 0.0; i < 2.0 * (4.0*5.0 + 1.0); i+=1.0)

@@ -1,13 +1,11 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Hello Leap</title>
+    <title>record Leap</title>
 
     <script src="leap-0.6.4.min.js"></script>
 
-
     <script>
-
       // to make working with angles easy
       var Deg2Rad = Math.PI / 180;
       var Rad2Deg = 1 / Deg2Rad;
@@ -79,18 +77,18 @@
                     myFrame[currentHand][fingerName].push(pointable.pipPosition)
                     myFrame[currentHand][fingerName].push(pointable.dipPosition)
 
-                    // handString += "Pointable Name: " + fingerName + "<br />";
-                    // handString += "Pointable ID: " + pointable.id + "<br />";
-                    // handString += "Belongs to hand with ID: " + pointable.handId + "<br />";
-                    // handString += "Length: " + pointable.length.toFixed(1) + " mm<br />";
-                    // handString += "Width: "  + pointable.width.toFixed(1) + " mm<br />";
-                    // handString += "Direction: " + vectorToString(pointable.direction, 2) + "<br />";
-                    // handString += "Tip position: " + vectorToString(pointable.tipPosition) + " mm<br />";
-                    // handString += "Tip velocity: " + vectorToString(pointable.tipVelocity) + " mm/s<br />";
-                    // handString += "Carp position: " + vectorToString(pointable.carpPosition) + " mm<br />";
-                    // handString += "MCP position: " + vectorToString(pointable.mcpPosition) + " mm<br />";
-                    // handString += "DIP position: " + vectorToString(pointable.dipPosition) + " mm<br />";
-                    // handString += "PIP position: " + vectorToString(pointable.pipPosition) + " mm<br />";
+                    handString += "Pointable Name: " + fingerName + "<br />";
+                    handString += "Pointable ID: " + pointable.id + "<br />";
+                    handString += "Belongs to hand with ID: " + pointable.handId + "<br />";
+                    handString += "Length: " + pointable.length.toFixed(1) + " mm<br />";
+                    handString += "Width: "  + pointable.width.toFixed(1) + " mm<br />";
+                    handString += "Direction: " + vectorToString(pointable.direction, 2) + "<br />";
+                    handString += "Tip position: " + vectorToString(pointable.tipPosition) + " mm<br />";
+                    handString += "Tip velocity: " + vectorToString(pointable.tipVelocity) + " mm/s<br />";
+                    handString += "Carp position: " + vectorToString(pointable.carpPosition) + " mm<br />";
+                    handString += "MCP position: " + vectorToString(pointable.mcpPosition) + " mm<br />";
+                    handString += "DIP position: " + vectorToString(pointable.dipPosition) + " mm<br />";
+                    handString += "PIP position: " + vectorToString(pointable.pipPosition) + " mm<br />";
                 }
             }
             out.innerHTML = handString;

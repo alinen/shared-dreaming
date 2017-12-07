@@ -15,7 +15,12 @@ class HandHelper
 
     if (jsonName !== undefined)
     {
-        this.getFrameData(jsonName);
+      this.getFrameData(jsonName);
+    } else {
+      this.frameData = myFrame;
+      this.frames = this.frameData.frames;
+      this.center = this.frameData.center;
+      this.boundingBox = this.frameData.boundingBox;
     }
   }
 
@@ -59,12 +64,11 @@ class HandHelper
     return [normX, normY, normZ];
   }
 
-  update(dt) {
-
+  parseRecordedData(frames, index, length) {
     var nameMap = ["thumb", "index", "middle", "ring", "pinky"];
-    if (this.frames && this.frameIndex < this.frames.length) {
+    if (frames && index < frames.length) {
 
-        var frame = this.frames[this.frameIndex];
+        var frame = frames[index];
 
         var idx = 0;
         if (Object.keys(frame['right']).length !== 0)
@@ -74,7 +78,7 @@ class HandHelper
 
             for (var i = 0; i < 5; i++)
             {
-                for (var j = 0; j < 4; j++) 
+                for (var j = 0; j < 4; j++)
                 {
                     var pos = this.normalizeValues(frame['right'][nameMap[i]][j]);
                     this.toData(idx++, this.data, pos, this.rgba, this.radius);
@@ -91,7 +95,7 @@ class HandHelper
 
             for (var i = 0; i < 5; i++)
             {
-                for (var j = 0; j < 4; j++) 
+                for (var j = 0; j < 4; j++)
                 {
                     var pos = this.normalizeValues(frame['left'][nameMap[i]][j]);
                     this.toData(idx++, this.data, pos, this.rgba, this.radius);
@@ -99,12 +103,21 @@ class HandHelper
             }
         }
 
-        this.frameIndex = (this.frameIndex + 1) % this.frames.length;
+        index = (index + 1) % frames.length;
+    }
+  }
+
+  update(framesJSONobj = null) { /// pass in framesJSONobj
+    if (framesJSONobj && framesJSONobj.frames.length) {
+      debugger
+      this.parseRecordedData(framesJSONobj.frames, framesJSONobj.frames.length - 1)
+    } else {
+      this.parseRecordedData(this.frames, this.frameIndex)
     }
   }
 
   getFrameData(jsonName) {
-    var url = jsonName; 
+    var url = jsonName;
     var xhr = new XMLHttpRequest();
     var _this = this;
 
