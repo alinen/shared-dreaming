@@ -45,8 +45,6 @@ class HandHelper
   }
 
   normalizeValues(positionValues) {
-// this.center (3) [0, 200, 0]
-// this.boundingBox (3) [235.247, 235.247, 147.751]
     var worldCenter = [0.0, 0.0, -2.0];
     var normX = ((positionValues[0] - this.center[0]) / this.boundingBox[0]);
     var normY = ((positionValues[1] - this.center[1]) / this.boundingBox[1]);
@@ -64,11 +62,11 @@ class HandHelper
     return [normX, normY, normZ];
   }
 
-  parseRecordedData(frames, index, length) {
+  parseRecordedData(frames, length) {
     var nameMap = ["thumb", "index", "middle", "ring", "pinky"];
-    if (frames && index < frames.length) {
+    if (frames && this.frameIndex < frames.length) {
 
-        var frame = frames[index];
+        var frame = frames[this.frameIndex];
 
         var idx = 0;
         if (Object.keys(frame['right']).length !== 0)
@@ -103,16 +101,16 @@ class HandHelper
             }
         }
 
-        index = (index + 1) % frames.length;
+        this.frameIndex = (this.frameIndex + 1) % frames.length;
     }
   }
 
-  update(framesJSONobj = null) { /// pass in framesJSONobj
+  update(framesJSONobj = null) {
     if (framesJSONobj && framesJSONobj.frames.length) {
-      debugger
-      this.parseRecordedData(framesJSONobj.frames, framesJSONobj.frames.length - 1)
+      this.frameIndex = framesJSONobj.frames.length - 1
+      this.parseRecordedData(framesJSONobj.frames)
     } else {
-      this.parseRecordedData(this.frames, this.frameIndex)
+      this.parseRecordedData(this.frames)
     }
   }
 
@@ -129,7 +127,7 @@ class HandHelper
             _this.frames = _this.frameData.frames;
             _this.center = _this.frameData.center;
             _this.boundingBox = _this.frameData.boundingBox;
-            _this.update(0, []);
+            _this.update();
           } else {
             console.error('Leap Playback: "' + url + '" seems to be unreachable or the file is empty.');
           }
