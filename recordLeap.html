@@ -16,7 +16,11 @@
           return '(' + v[0] + ', ' + v[1] + ', ' + v[2] + ')';
       }
 
-      var listOfFrames = [];
+      var framesJSONobj = {
+        "center": [],
+        "boundingBox": [],
+        "frames": []
+      };
 
       var myFrame = {
         "timestamp": 1234,
@@ -40,6 +44,8 @@
             var timestamp = newTime - startTime;
 
             myFrame.timestamp = timestamp;
+            framesJSONobj.center = frame.interactionBox.center
+            framesJSONobj.boundingBox = frame.interactionBox.size
 
             for (var i = 0; i < frame.hands.length; i++) {
                 var hand = frame.hands[i];
@@ -89,7 +95,7 @@
                 }
             }
             out.innerHTML = handString;
-            listOfFrames.push(myFrame);
+            framesJSONobj.frames.push(myFrame);
         },
 
         // hand callbacks are run once for each hand in the frame
@@ -100,7 +106,7 @@
       });
 
       function onClick() {
-        var txt = JSON.stringify(listOfFrames);
+        var txt = JSON.stringify(framesJSONobj);
 
         var blob = new Blob([txt], { type: "text/json;charset=utf-8"})
 
