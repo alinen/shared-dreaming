@@ -1,3 +1,9 @@
+var framesJSONobj = {
+  "center": [],
+  "boundingBox": [],
+  "frames": []
+};
+
 var squareVertexPositionBuffer;
 var mvMatrix = mat4.create();
 var pMatrix = mat4.create();
@@ -6,7 +12,11 @@ var elapsedTime = 0;
 var lastTime = 0;
 var numSpheres = 50;
 var textureId = 0;
+var handTextureId = 1;
 var gl;
+var numHandData = 2 * (4*5 + 1); // 2 hands * ( 4 fingerJoints * 5 fingers + palmPos)
+var recording = "https://raw.githubusercontent.com/alinen/shared-dreaming/hand-texture/leapMotion_1512653331064.json";
+var hand = new HandHelper(recording);
 
 function initGL(canvas)
 {
@@ -15,7 +25,7 @@ function initGL(canvas)
       gl = canvas.getContext("experimental-webgl");
       gl.viewportWidth = canvas.width;
       gl.viewportHeight = canvas.height;
-      gl.getExtension('OES_texture_float'); 
+      gl.getExtension('OES_texture_float');
    }
    catch (e)
   {
@@ -68,12 +78,10 @@ function initShaders()
 
 function initTexture()
 {
-   var num_of_floats = system.maxNumSpheres * 3 * 4;
-
-   //system.setupSpheres(); // asn can I remove and call from ctor?
-
    textureId = gl.createTexture();
+
    gl.bindTexture(gl.TEXTURE_2D, textureId);
+
    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -82,6 +90,23 @@ function initTexture()
    textureSize = system.maxNumSpheres * 3;
 
    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, textureSize, 1, 0, gl.RGBA, gl.FLOAT, system.data);
+   gl.bindTexture(gl.TEXTURE_2D, null);
+}
+
+function initHandTexture()
+{
+  handTextureId = gl.createTexture();
+
+  gl.bindTexture(gl.TEXTURE_2D, handTextureId);
+
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+  handTextureSize = numHandData * 2;
+
+   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, handTextureSize, 1, 0, gl.RGBA, gl.FLOAT, hand.data);
    gl.bindTexture(gl.TEXTURE_2D, null);
 }
 
@@ -177,6 +202,9 @@ function drawScene()
    var uTextureSize = gl.getUniformLocation(shaderProgram, "size_of_texture");
    gl.uniform1f(uTextureSize, textureSize);
 
+      var uHandTextureSize = gl.getUniformLocation(shaderProgram, "size_of_hand_texture");
+   gl.uniform1f(uHandTextureSize, handTextureSize);
+
    var uNumSpheres = gl.getUniformLocation(shaderProgram, "num_of_spheres");
    gl.uniform1f(uNumSpheres, system.numSpheres);
 
@@ -184,8 +212,15 @@ function drawScene()
    gl.bindTexture(gl.TEXTURE_2D, textureId);
    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, textureSize, 1, 0, gl.RGBA, gl.FLOAT, system.data);
 
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, handTextureId);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, handTextureSize, 1, 0, gl.RGBA, gl.FLOAT, hand.data);
+
    var uSphereInfo = gl.getUniformLocation(shaderProgram, "sphere_info");
    gl.uniform1i(uSphereInfo, 0);
+
+   var uHandInfo = gl.getUniformLocation(shaderProgram, "hand_info");
+   gl.uniform1i(uHandInfo, 1);
 
    gl.drawArrays(gl.TRIANGLE_FAN, 0, squareVertexPositionBuffer.numItems);
 }
@@ -195,8 +230,10 @@ function tick()
    var newTime = new Date().getTime();
    var dt = (newTime - lastTime)*0.001;
    elapsedTime += dt * 4.0;
-    
+
    system.update(dt);
+   //hand.update(); // play recorded JSON
+   hand.update(framesJSONobj); // play realtime LeapMotion
    requestAnimFrame(tick);
    drawScene();
    lastTime = newTime
@@ -204,15 +241,18 @@ function tick()
 
 function webGLStart()
 {
-   var canvas = document.getElementById("canvas");
-   initGL(canvas);
-   initShaders();
-   initBuffers();
-   initTexture();
+  var canvas = document.getElementById("canvas");
+  initGL(canvas);
+  initShaders();
+  initBuffers();
+  initTexture();
+  initHandTexture();
 
-   lastTime =  new Date().getTime();
-   gl.clearColor(0.1, 0.1, 0.1, 1.0);
-   tick();
+  gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+
+  lastTime =  new Date().getTime();
+  gl.clearColor(0.1, 0.1, 0.1, 1.0);
+  tick();
 }
 
 

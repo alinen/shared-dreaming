@@ -1,18 +1,39 @@
 <html>
 
 <head>
-<title>Bubbles</title>
+<title>.oOLeapMotionOo.</title>
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
-<script type="text/javascript" src="glmatrix-min.js"></script>
-<script type="text/javascript" src="webgl-utils.js"></script>
-<script type="text/javascript" src="shaders/bubbles-fs.js"></script>
-<script type="text/javascript" src="shaders/bubbles-vs.js"></script>
-<script type="text/javascript" src="particlesim/utils.js"></script>
-<script type="text/javascript" src="particlesim/sphereHelper.js"></script>
-<script type="text/javascript" src="particlesim/bubbles.js"></script>
-<script type="text/javascript" src="particlesim/particles.js"></script>
+  <script type="text/javascript" src="glmatrix-min.js"></script>
+  <script type="text/javascript" src="webgl-utils.js"></script>
+  <script type="text/javascript" src="shaders/bubbles-fs.js"></script>
+  <script type="text/javascript" src="shaders/bubbles-vs.js"></script>
+  <script type="text/javascript" src="particlesim/utils.js"></script>
+  <script type="text/javascript" src="particlesim/sphereHelper.js"></script>
+  <script type="text/javascript" src="particlesim/handHelper.js"></script>
+  <script type="text/javascript" src="particlesim/bubbles.js"></script>
+  <script type="text/javascript" src="particlesim/particles.js"></script>
+  <script type="text/javascript" src="particlesim/paramsBubbles.js"></script>
 
-</head><body onload="webGLStart();">
+  <script src="leap-0.6.4.min.js"></script>
+
+    <style>
+      body {
+        line-height: 12em;
+        font-size: 1em;
+        font-family: Helvetica;
+      }
+    </style>
+
+  </head>
+
+  <body><body onload="webGLStart();">
     <canvas id="canvas" style="border: none;" width="720" height="480"></canvas>
-</body></html>
+    <div height="100px" color="red" onclick="onClick()" font size="11" href="">click to download JSON</div>
+    <div id="out"></div>
+
+  </body>
+
+  <script type="text/javascript" src="particlesim/leapHelper.js"></script>
+
+</html>
