@@ -29,19 +29,28 @@ class HandHelper
     this.data[i + 7] = 1.0;
   }
 
-  toData(idx, data) {
+  toData(idx, data, pos, rgba, radius) {
     var i = idx * 2 * 4;
 
-    this.data[i + 0] = this.palmPos[0]
-    this.data[i + 1] = this.palmPos[1]
-    this.data[i + 2] = this.palmPos[2]
+    data[i + 0] = pos[0]
+    data[i + 1] = pos[1]
+    data[i + 2] = pos[2]
 
-    this.data[i + 3] = this.radius;
+    data[i + 3] = radius;
 
-    this.data[i + 4] = this.rgba[0];
-    this.data[i + 5] = this.rgba[1];
-    this.data[i + 6] = this.rgba[2];
-    this.data[i + 7] = this.rgba[3];
+    data[i + 4] = rgba[0];
+    data[i + 5] = rgba[1];
+    data[i + 6] = rgba[2];
+    data[i + 7] = rgba[3];
+  }
+
+  normalizeValues(positionValues) {
+// this.center (3) [0, 200, 0]
+// this.boundingBox (3) [235.247, 235.247, 147.751]
+    var normX = (positionValues.x - this.center.x) / this.boundingBox.x
+    var normY = (positionValues.y - this.center.y) / this.boundingBox.y
+    var normZ = (positionValues.z - this.center.z) / this.boundingBox.z
+    return [normX, normY, normZ];
   }
 
   update(dt, data) {
@@ -50,12 +59,16 @@ class HandHelper
         this.frameIndex = 1;
       }
       if (this.frames[this.frameIndex]) {
-        this.palmPos = this.frames[this.frameIndex][2][0][4];
-        this.rgba = this.frames[this.frameIndex][2][0][4]
-        this.rgba = this.rgba.map(function(n) { return n/255.0 % 1.0});
+        // this.rgba = this.frames[this.frameIndex][2][0][4]
+        var rgba = this.frames[this.frameIndex][2][0][4].map(function(n) { return n/255.0 % 1.0});
         console.log('this.rgba', this.rgba)
+
+        var palm = this.normalizeValues(this.frames[this.frameIndex][2][0][4]);
+        this.toData(RT_PALM, this.data, palm, rgba, radius);
+
+
+
         this.radius = 1.0;
-        this.toData(0);
       }
     }
   }
