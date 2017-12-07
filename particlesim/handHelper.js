@@ -6,27 +6,17 @@ class HandHelper
     this.rgba = [0.0, 0.0, 0.0, 0.0];
 
     this.data = [];
-    this.metadata;
-    this.timeDelta;
-    this.frames;
-    this.frameIndex = 1;
+    this.frames = null;
+    this.frameIndex = 0;
+    this.radius = 0.1;
+    this.rgba = [1,1,1,1];
 
-    this.setDefaultValues();
+    this.init();
   }
 
-  setDefaultValues() {
-    this.data = new Float32Array(numHands * 2 * 4);
-    var i = 0;
-    this.data[i + 0] = 1.0;
-    this.data[i + 1] = 0.0;
-    this.data[i + 2] = 0.0;
-
-    this.data[i + 3] = 1.0;
-
-    this.data[i + 4] = 1.0;
-    this.data[i + 5] = 0.0;
-    this.data[i + 6] = 0.0;
-    this.data[i + 7] = 1.0;
+  init() {
+    this.data = new Float32Array(numHandsData * 2 * 4);
+    for (int i = 0; i < this.data.length; i++) this.data[i] = 0.0;
   }
 
   toData(idx, data, pos, rgba, radius) {
@@ -53,23 +43,39 @@ class HandHelper
     return [normX, normY, normZ];
   }
 
-  update(dt, data) {
-    if (this.frames && this.frames[this.frameIndex++]) {
-      if (this.frameIndex > this.metadata.frames) {
-        this.frameIndex = 1;
-      }
-      if (this.frames[this.frameIndex]) {
-        // this.rgba = this.frames[this.frameIndex][2][0][4]
-        var rgba = this.frames[this.frameIndex][2][0][4].map(function(n) { return n/255.0 % 1.0});
-        console.log('this.rgba', this.rgba)
+  update(dt) {
 
-        var palm = this.normalizeValues(this.frames[this.frameIndex][2][0][4]);
-        this.toData(RT_PALM, this.data, palm, rgba, radius);
+    var nameMap = ["thumb", "index", "middle", "ring", "pinky"];
+    if (this.frames && this.frameIndex < this.frames.length) {
 
+        var frame = frames[this.frameIndex];
 
+        var idx = 0;
+        var palmPos = this.normalizeValues(frame['right']['palmPosition']);
+        this.toData(idx++, this.data, palmPos, this.rgba, this.radius);
 
-        this.radius = 1.0;
-      }
+        for (int i = 0; i < 5; i++)
+        {
+            for (int j = 0; j < 4; j++) 
+            {
+                var pos = this.normalizeValues(frame['right'][nameMap[i]][j];
+                this.toData(idx++, this.data, pos, this.rgba, this.radius);
+            }
+        }
+
+        palmPos = this.normalizeValues(frame['left']['palmPosition']);
+        this.toData(idx++, this.data, palmPos, this.rgba, this.radius);
+
+        for (int i = 0; i < 5; i++)
+        {
+            for (int j = 0; j < 4; j++) 
+            {
+                var pos = this.normalizeValues(frame['left'][nameMap[i]][j];
+                this.toData(idx++, this.data, pos, this.rgba, this.radius);
+            }
+        }
+
+        this.frameIndex = (this.frameIndex + 1) % this.frames.length;
     }
   }
 
@@ -83,13 +89,10 @@ class HandHelper
         if (xhr.status === 200 || xhr.status === 0) {
           if (xhr.responseText) {
             _this.frameData = JSON.parse(xhr.responseText);
-            _this.metadata = _this.frameData.metadata;
-            _this.timeDelta = _this.metadata.frames / _this.metadata.frameRate / 30;
             _this.frames = _this.frameData.frames;
-            _this.center = _this.frames[1][4][0];
-            _this.boundingBox = _this.frames[1][4][1];
-
-            _this.update(1, []);
+            _this.center = _this.frameData.center;
+            _this.boundingBox = _this.frameData.bbox;
+            _this.update(0, []);
           } else {
             console.error('Leap Playback: "' + url + '" seems to be unreachable or the file is empty.');
           }

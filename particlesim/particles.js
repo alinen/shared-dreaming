@@ -1,29 +1,8 @@
-var RT_PALM_POS = 0;
-var RT_INDEX_CARP = 1;
-var RT_INDEX_MCP = 2;
-var RT_INDEX_PIP = 3;
-var RT_INDEX_DIP = 4;
-var RT_INDEX_BTIP = 5;
-var RT_RING_CARP = 6;
-var RT_RING_MCP = 7;
-var RT_RING_PIP = 8;
-var RT_RING_DIP = 9;
-var RT_RING_BTIP = 10;
-var RT_PINKY_CARP = 11;
-var RT_PINKY_MCP = 12;
-var RT_PINKY_PIP = 13;
-var RT_PINKY_DIP = 14;
-var RT_PINKY_BTIP = 15;
-var RT_MIDDLE_CARP = 16;
-var RT_MIDDLE_MCP = 17;
-var RT_MIDDLE_PIP = 18;
-var RT_MIDDLE_DIP = 19;
-var RT_MIDDLE_BTIP = 20;
-var RT_THUMB_CARP = 21;
-var RT_THUMB_MCP = 22;
-var RT_THUMB_PIP = 23;
-var RT_THUMB_DIP = 24;
-var RT_THUMB_BTIP = 25;
+var PALM_POS = 0;
+var CARP = 0;
+var MCP = 1;
+var PIP = 2;
+var DIP = 3;
 
 var squareVertexPositionBuffer;
 var mvMatrix = mat4.create();
@@ -36,7 +15,7 @@ var textureId = 0;
 var handTextureId = 1;
 var gl;
 var system = new Bubbles(50, 100);
-var numHands = 1;
+var numHandData = 2 * (4*5 + 1); // 2 hands * ( 4 fingerJoints * 5 fingers + palmPos)
 var hand = new HandHelper();
 
 function initGL(canvas)
@@ -130,7 +109,7 @@ function initHandTexture()
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-  handTextureSize = numHands * 2;
+  handTextureSize = numHandsData * 2;
 
    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, handTextureSize, 1, 0, gl.RGBA, gl.FLOAT, hand.data);
    gl.bindTexture(gl.TEXTURE_2D, null);
