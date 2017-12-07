@@ -1,9 +1,3 @@
-var PALM_POS = 0;
-var CARP = 0;
-var MCP = 1;
-var PIP = 2;
-var DIP = 3;
-
 var framesJSONobj = {
   "center": [],
   "boundingBox": [],
@@ -239,8 +233,8 @@ function tick()
    elapsedTime += dt * 4.0;
 
    system.update(dt);
-   hand.update(); // play recorded JSON
-   // hand.update(framesJSONobj); // play realtime LeapMotion
+   //hand.update(); // play recorded JSON
+   hand.update(framesJSONobj); // play realtime LeapMotion
    requestAnimFrame(tick);
    drawScene();
    lastTime = newTime

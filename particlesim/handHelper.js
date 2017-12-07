@@ -55,11 +55,11 @@ class HandHelper
     //var x = Math.cos(angle) * normX - Math.sin(angle) * normY;
     //var y = Math.sin(angle) * normX + Math.sin(angle) * normY;
 
-    normX = normX * 2.0 + worldCenter[0];
-    normY = normY * 2.0 + worldCenter[1];
-    normZ = normZ * 2.0 + worldCenter[1];
+    var x = normX * 2.0 + worldCenter[0];
+    var y = normY * 2.0 + worldCenter[1];
+    var z = normZ * 2.0 + worldCenter[2];
 
-    return [normX, normY, normZ];
+    return [x, y, z];
   }
 
   parseRecordedData(frames, length) {
@@ -89,7 +89,6 @@ class HandHelper
             idx = 4 * 5 + 1;
             var palmPos = this.normalizeValues(frame['left']['palmPosition']);
             this.toData(idx++, this.data, palmPos, this.rgba, this.radius);
-            console.log("Left PALM "+palmPos);
 
             for (var i = 0; i < 5; i++)
             {
@@ -100,6 +99,8 @@ class HandHelper
                 }
             }
         }
+
+        console.log(idx);
 
         this.frameIndex = (this.frameIndex + 1) % frames.length;
     }
