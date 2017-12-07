@@ -44,7 +44,8 @@ class HandHelper
   }
 
   update(dt) {
-
+    // console.log('framesJSONobj', framesJSONobj)
+    // debugger
     var nameMap = ["thumb", "index", "middle", "ring", "pinky"];
     if (this.frames && this.frameIndex < this.frames.length) {
 
@@ -56,7 +57,7 @@ class HandHelper
 
         for (int i = 0; i < 5; i++)
         {
-            for (int j = 0; j < 4; j++) 
+            for (int j = 0; j < 4; j++)
             {
                 var pos = this.normalizeValues(frame['right'][nameMap[i]][j];
                 this.toData(idx++, this.data, pos, this.rgba, this.radius);
@@ -68,7 +69,7 @@ class HandHelper
 
         for (int i = 0; i < 5; i++)
         {
-            for (int j = 0; j < 4; j++) 
+            for (int j = 0; j < 4; j++)
             {
                 var pos = this.normalizeValues(frame['left'][nameMap[i]][j];
                 this.toData(idx++, this.data, pos, this.rgba, this.radius);
