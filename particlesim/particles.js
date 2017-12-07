@@ -231,9 +231,9 @@ function tick()
    var dt = (newTime - lastTime)*0.001;
    elapsedTime += dt * 4.0;
 
-   system.update(dt);
-   //hand.update(); // play recorded JSON
-   hand.update(framesJSONobj); // play realtime LeapMotion
+   hand.update(); // play recorded JSON
+   //hand.update(framesJSONobj); // play realtime LeapMotion
+   system.update(dt, hand);
    requestAnimFrame(tick);
    drawScene();
    lastTime = newTime

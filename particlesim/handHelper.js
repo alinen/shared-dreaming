@@ -4,12 +4,14 @@ class HandHelper
     this.palmPos = [0.0, 0.0, 0.0];
     this.radius = 0.0;
     this.rgba = [0.0, 0.0, 0.0, 0.0];
+    this.currentFrame = null;
 
     this.data = [];
     this.frames = null;
     this.frameIndex = 0;
     this.radius = 0.1;
     this.rgba = [1,1,1,1];
+    this.pos = [0,0,0];
 
     this.init();
 
@@ -27,6 +29,21 @@ class HandHelper
   init() {
     this.data = new Float32Array(numHandData * 2 * 4);
     for (var i = 0; i < this.data.length; i++) this.data[i] = 0.0;
+  }
+
+  fromData(idx) {
+    var i = idx * 2 * 4;
+
+    this.pos[0] = this.data[i + 0];
+    this.pos[1] = this.data[i + 1];
+    this.pos[2] = this.data[i + 2];
+
+    this.radius = this.data[i + 3];
+
+    this.rgba[0] = this.data[i + 4];
+    this.rgba[1] = this.data[i + 5];
+    this.rgba[2] = this.data[i + 6];
+    this.rgba[3] = this.data[i + 7];
   }
 
   toData(idx, data, pos, rgba, radius) {
@@ -62,11 +79,17 @@ class HandHelper
     return [x, y, z];
   }
 
+  getCurrentFrame()
+  {
+    return this.currentFrame;
+  }
+
   parseRecordedData(frames, length) {
     var nameMap = ["thumb", "index", "middle", "ring", "pinky"];
     if (frames && this.frameIndex < frames.length) {
 
         var frame = frames[this.frameIndex];
+        this.currentFrame = frame;
 
         var idx = 0;
         if (Object.keys(frame['right']).length !== 0)
