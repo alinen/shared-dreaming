@@ -15,7 +15,7 @@ var textureId = 0;
 var handTextureId = 1;
 var gl;
 var numHandData = 2 * (4*5 + 1); // 2 hands * ( 4 fingerJoints * 5 fingers + palmPos)
-var recording = "https://raw.githubusercontent.com/alinen/shared-dreaming/hand-texture/leapMotion_1512653331064.json";
+var recording = "https://raw.githubusercontent.com/alinen/shared-dreaming/hand-texture/leapMotion_1512680922000.json";
 var hand = new HandHelper(recording);
 
 function initGL(canvas)
@@ -234,6 +234,8 @@ function tick()
    hand.update(); // play recorded JSON
    //hand.update(framesJSONobj); // play realtime LeapMotion
    system.update(dt, hand);
+   //system.update(dt);
+
    requestAnimFrame(tick);
    drawScene();
    lastTime = newTime

@@ -105,7 +105,7 @@ void blob(in vec3 p, out float d, out vec3 normal, out vec4 color)
 
   float a = 1.0;
   float b = 0.5 * 100.0;
-  for (float i = 0.0; i < 500.0; i+=10.0) { // need to hardcode loop
+  for (float i = 0.0; i < 50.0; i+=1.0) { // need to hardcode loop
     float startIndex = i * 3.0;
 
     float tex_coord_1 = (startIndex + 0.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
@@ -136,7 +136,7 @@ void simple(in vec3 p, out float d, out vec3 normal, out vec4 color)
   float b = 0.5 * 100.0;
 
   color = vec4(0,0,0,0);
-  for (float i = 0.0; i < 100.0; i+=1.0) { // need to hardcode loop
+  for (float i = 0.0; i < 50.0; i+=1.0) { // need to hardcode loop
     float startIndex = i * 3.0;
 
     float tex_coord_1 = (startIndex + 0.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
@@ -160,7 +160,7 @@ void simple(in vec3 p, out float d, out vec3 normal, out vec4 color)
 void sphereIntersection(in vec3 ray_start, in vec3 ray_dir, out float t, out vec3 normal, out vec4 color)
 {
   t = -1.0;
-  for (float d = 2.0; d < 3.5; d += 0.1) { // everything is at z = -2.0
+  for (float d = 0.5; d < 4.0; d += 0.1) { // everything is at z = -2.0
     vec3 p = ray_start + d * ray_dir;
     float distance = 0.0;
  
@@ -223,10 +223,10 @@ void main ()
   sphereIntersection(camera_pos, normalized_view_dir, t, hit_sphere_normal, hit_sphere_rgb);
 
   if (t < 0.0) {
-    //vec4 color;
-    //computeColor(camera_pos, normalized_view_dir, color);
-    //gl_FragColor = color;
-    gl_FragColor = vec4(0,0,0,1);
+    vec4 color;
+    computeColor(camera_pos, normalized_view_dir, color);
+    gl_FragColor = color;
+    //gl_FragColor = vec4(0,0,0,1);
 
   } else {
     vec4 ambient_color = vec4(0.1750, 0.1750, 0.1750, 1.0);

@@ -90,10 +90,12 @@ class HandHelper
 
         var frame = frames[this.frameIndex];
         this.currentFrame = frame;
+        var rightHandPresent = false;
 
         var idx = 0;
         if (Object.keys(frame['right']).length !== 0)
         {
+            rightHandPresent = true;
             var palmPos = this.normalizeValues(frame['right']['palmPosition']);
             this.toData(idx++, this.data, palmPos, this.rgba, this.radius);
 
@@ -109,7 +111,11 @@ class HandHelper
 
         if (Object.keys(frame['left']).length !== 0)
         {
-            idx = 4 * 5 + 1;
+            if (true == rightHandPresent) {
+              idx = 4 * 5 + 1;
+            } else {
+              idx = 0;
+            }
             var palmPos = this.normalizeValues(frame['left']['palmPosition']);
             this.toData(idx++, this.data, palmPos, this.rgba, this.radius);
 
@@ -122,7 +128,6 @@ class HandHelper
                 }
             }
         }
-
         this.frameIndex = (this.frameIndex + 1) % frames.length;
     }
   }
