@@ -105,7 +105,6 @@ class HandHelper
                 }
             }
         }
-
         this.frameIndex = (this.frameIndex + 1) % frames.length;
     }
   }

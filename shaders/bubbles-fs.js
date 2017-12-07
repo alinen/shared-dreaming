@@ -170,7 +170,7 @@ void main ()
 
   // hand data
   float sIndex = 0.0;
-  for (float i = 0.0; i < 2.0 * (4.0*5.0 + 1.0); i+=1.0)
+  for (float i = 0.0; i < 2.0 * (2.0 * (4.0*5.0 + 1.0)); i+=1.0)
   {
       float startIndex = i;
       float texel = 1.0 / size_of_hand_texture;
