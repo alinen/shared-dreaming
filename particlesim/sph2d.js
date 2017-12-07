@@ -40,9 +40,13 @@ class SPH2D
       var bottomWallStart = vec3.fromValues(this.params.min[0], this.params.min[1], 0); // todo: make a plane
       var bottomWallEnd = vec3.fromValues(this.params.max[0], this.params.min[1], 0); // todo 
       this.bottomWall = new Obstacle(bottomWallStart, bottomWallEnd, 0);
+
+      var topWallStart = vec3.fromValues(this.params.min[0], this.params.max[1], 0); // todo: make a plane
+      var topWallEnd = vec3.fromValues(this.params.max[0], this.params.max[1], 0); // todo 
+      this.topWall = new Obstacle(topWallStart, topWallEnd, 0);
       
       // create some obstacles to test
-      //this.pushObstacle(vec3.fromValues(-2,1,-2), vec3.fromValues(2,-2,-2));
+      this.pushObstacle(vec3.fromValues(-2,1,-2), vec3.fromValues(2,-2,-2));
       
       this.setupSpheres();
       this.init();
@@ -185,6 +189,7 @@ class SPH2D
         vec3.set(this.accelerations[i], force[0], force[1], 0);
 
         //vec3.set(this.accelerations[i], 0, this.params.g, 0);
+        //vec3.set(this.accelerations[i], 0, 0, 0);
 
         for (var j = 0; j < this.obstacles.length; j++)
         {
@@ -351,6 +356,8 @@ class SPH2D
             vec3.scale(force, pb, scale);
           }
       }
+
+      vec3.scale(force, force, -1.0);
       return force;
     }
 
@@ -456,6 +463,10 @@ class SPH2D
             if (this.sh.pos[1] < this.params.min[1]) 
             {
                 this.dampReflect(i, this.bottomWall); 
+            }
+            if (this.sh.pos[1] > this.params.max[1]) 
+            {
+                this.dampReflect(i, this.topWall); 
             }
         }
     }
