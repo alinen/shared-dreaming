@@ -109,7 +109,7 @@ function initHandTexture()
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-  handTextureSize = numHandsData * 2;
+  handTextureSize = numHandData * 2;
 
    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, handTextureSize, 1, 0, gl.RGBA, gl.FLOAT, hand.data);
    gl.bindTexture(gl.TEXTURE_2D, null);

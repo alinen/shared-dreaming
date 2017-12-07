@@ -15,8 +15,8 @@ class HandHelper
   }
 
   init() {
-    this.data = new Float32Array(numHandsData * 2 * 4);
-    for (int i = 0; i < this.data.length; i++) this.data[i] = 0.0;
+    this.data = new Float32Array(numHandData * 2 * 4);
+    for (var i = 0; i < this.data.length; i++) this.data[i] = 0.0;
   }
 
   toData(idx, data, pos, rgba, radius) {
@@ -37,9 +37,16 @@ class HandHelper
   normalizeValues(positionValues) {
 // this.center (3) [0, 200, 0]
 // this.boundingBox (3) [235.247, 235.247, 147.751]
-    var normX = (positionValues.x - this.center.x) / this.boundingBox.x
-    var normY = (positionValues.y - this.center.y) / this.boundingBox.y
-    var normZ = (positionValues.z - this.center.z) / this.boundingBox.z
+    var worldCenter = [0.0, 0.0, -2.0];
+    var normX = ((positionValues[0] - this.center[0]) / this.boundingBox[0]) * 2.0 + worldCenter[0];
+    var normY = ((positionValues[1] - this.center[1]) / this.boundingBox[1]) * 2.0 + worldCenter[1];
+    var normZ = ((positionValues[2] - this.center[2]) / this.boundingBox[2]) * 2.0 + worldCenter[2];
+
+    // rotate hand = - 90
+    var angle = 90 * 180.0/Math.PI;
+    var rotX = Math.cos(angle) * normX - Math.sin(angle) * normY;
+    var rotY = Math.sin(angle) * normX + Math.sin(angle) * normY;
+
     return [normX, normY, normZ];
   }
 
@@ -48,30 +55,39 @@ class HandHelper
     var nameMap = ["thumb", "index", "middle", "ring", "pinky"];
     if (this.frames && this.frameIndex < this.frames.length) {
 
-        var frame = frames[this.frameIndex];
+        var frame = this.frames[this.frameIndex];
 
         var idx = 0;
-        var palmPos = this.normalizeValues(frame['right']['palmPosition']);
-        this.toData(idx++, this.data, palmPos, this.rgba, this.radius);
-
-        for (int i = 0; i < 5; i++)
+        if (Object.keys(frame['right']).length !== 0)
         {
-            for (int j = 0; j < 4; j++) 
+            var palmPos = this.normalizeValues(frame['right']['palmPosition']);
+            console.log("RIGHT PALM "+palmPos);
+            this.toData(idx++, this.data, palmPos, this.rgba, this.radius);
+
+            for (var i = 0; i < 5; i++)
             {
-                var pos = this.normalizeValues(frame['right'][nameMap[i]][j];
-                this.toData(idx++, this.data, pos, this.rgba, this.radius);
+                for (var j = 0; j < 4; j++) 
+                {
+                    var pos = this.normalizeValues(frame['right'][nameMap[i]][j]);
+                    this.toData(idx++, this.data, pos, this.rgba, this.radius);
+                }
             }
         }
 
-        palmPos = this.normalizeValues(frame['left']['palmPosition']);
-        this.toData(idx++, this.data, palmPos, this.rgba, this.radius);
-
-        for (int i = 0; i < 5; i++)
+        if (Object.keys(frame['left']).length !== 0)
         {
-            for (int j = 0; j < 4; j++) 
+            idx = 4 * 5 + 1;
+            var palmPos = this.normalizeValues(frame['left']['palmPosition']);
+            this.toData(idx++, this.data, palmPos, this.rgba, this.radius);
+            console.log("Left PALM "+palmPos);
+
+            for (var i = 0; i < 5; i++)
             {
-                var pos = this.normalizeValues(frame['left'][nameMap[i]][j];
-                this.toData(idx++, this.data, pos, this.rgba, this.radius);
+                for (var j = 0; j < 4; j++) 
+                {
+                    var pos = this.normalizeValues(frame['left'][nameMap[i]][j]);
+                    this.toData(idx++, this.data, pos, this.rgba, this.radius);
+                }
             }
         }
 
@@ -80,7 +96,7 @@ class HandHelper
   }
 
   getFrameData() {
-    var url = "https://raw.githubusercontent.com/alinen/shared-dreaming/master/recordings_pinch-57fps-57fps.json";
+    var url = "https://raw.githubusercontent.com/alinen/shared-dreaming/hand-texture/leapMotion_1512650952462.json";
     var xhr = new XMLHttpRequest();
     var _this = this;
 
@@ -91,7 +107,7 @@ class HandHelper
             _this.frameData = JSON.parse(xhr.responseText);
             _this.frames = _this.frameData.frames;
             _this.center = _this.frameData.center;
-            _this.boundingBox = _this.frameData.bbox;
+            _this.boundingBox = _this.frameData.boundingBox;
             _this.update(0, []);
           } else {
             console.error('Leap Playback: "' + url + '" seems to be unreachable or the file is empty.');
