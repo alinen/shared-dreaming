@@ -5,6 +5,7 @@
 
     <script src="leap-0.6.4.min.js"></script>
 
+
     <script>
 
       // to make working with angles easy
@@ -15,11 +16,16 @@
           return '(' + v[0] + ', ' + v[1] + ', ' + v[2] + ')';
       }
 
-      var frame = {
+      var listOfFrames = [];
+
+      var myFrame = {
         "timestamp": 1234,
         "right": {},
         "left": {}
       };
+
+      var startdate = new Date();
+      var startTime = startdate.getTime() * 0.001;
 
       var currentHand = "";
 
@@ -29,16 +35,21 @@
         frame: function(frame) {
             var handString = '';
 
-            frame.timestamp = hand.timestamp;
+            var date = new Date();
+            var newTime = date.getTime() * 0.001;
+            var timestamp = newTime - startTime;
+
+            myFrame.timestamp = timestamp;
+
             for (var i = 0; i < frame.hands.length; i++) {
                 var hand = frame.hands[i];
 
                 if ("right" == hand.type) {
-                  frame.right["palmPosition"] = hand.palmPosition
+                  myFrame.right["palmPosition"] = hand.palmPosition
                   currentHand = "right"
                 };
                 if ("left" == hand.type) {
-                  frame.left["palmPosition"] = hand.palmPosition
+                  myFrame.left["palmPosition"] = hand.palmPosition
                   currentHand = "left"
                 };
 
@@ -56,13 +67,12 @@
                     var nameMap = ["thumb", "index", "middle", "ring", "pinky"];
                     var fingerName = nameMap[pointable.type];
 
-                    frame[currentHand][fingerName] = []
+                    myFrame[currentHand][fingerName] = []
 
-                    frame[currentHand][fingerName].push(pointable.carpPosition)
-                    frame[currentHand][fingerName].push(pointable.mcpPosition)
-                    frame[currentHand][fingerName].push(pointable.pipPosition)
-                    frame[currentHand][fingerName].push(pointable.dipPosition)
-                    frame[currentHand][fingerName].push(pointable.btipPosition)
+                    myFrame[currentHand][fingerName].push(pointable.carpPosition)
+                    myFrame[currentHand][fingerName].push(pointable.mcpPosition)
+                    myFrame[currentHand][fingerName].push(pointable.pipPosition)
+                    myFrame[currentHand][fingerName].push(pointable.dipPosition)
 
                     handString += "Pointable Name: " + fingerName + "<br />";
                     handString += "Pointable ID: " + pointable.id + "<br />";
@@ -79,6 +89,7 @@
                 }
             }
             out.innerHTML = handString;
+            listOfFrames.push(myFrame);
         },
 
         // hand callbacks are run once for each hand in the frame
@@ -87,6 +98,25 @@
         }
 
       });
+
+      function onClick() {
+        var txt = JSON.stringify(listOfFrames);
+
+        var blob = new Blob([txt], { type: "text/json;charset=utf-8"})
+
+         var a = document.createElement("a");
+         var url = URL.createObjectURL(blob);
+         a.href = url;
+         var d = new Date()
+         var date = d.getTime()
+         a.download = "leapMotion_" + date + ".json";
+         document.body.appendChild(a);
+         a.click();
+         setTimeout(function() {
+             document.body.removeChild(a);
+             window.URL.revokeObjectURL(url);
+         }, 0);
+        }
 
     </script>
 
@@ -102,6 +132,7 @@
 
   <body>
 
+    <div height="100px" onclick="onClick()" href="">click to download JSON</div>
     <div id="out"></div>
 
   </body>
