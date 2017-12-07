@@ -68,11 +68,11 @@ void computeColor(in vec3 ray_start, in vec3 ray_dir, out vec4 color)
 
 void sphereIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 sphere_center, in float radius, out float t)
 {
-  vec3 sphere_dir = sphere_center - ray_start;            // intersection test
-  float sphere_len = length(sphere_center - ray_start);            // intersection test
-  float projection = dot(sphere_dir, ray_dir); // intersection test
+  vec3 sphere_dir = sphere_center - ray_start;                  // intersection test
+  float sphere_len = length(sphere_center - ray_start);         // intersection test
+  float projection = dot(sphere_dir, ray_dir);                  // intersection test
   vec3 dir_perpendicular = sphere_dir - (ray_dir * projection); // intersection test
-  float len_dir_perpend = length(dir_perpendicular);       // intersection test
+  float len_dir_perpend = length(dir_perpendicular);            // intersection test
 
   if (len_dir_perpend > radius) {
     t = -1.0;
@@ -90,11 +90,18 @@ void sphereIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 sphere_cente
 
 void palmIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 sphere_center, in float radius, out float t)
 {
-  vec3 sphere_dir = sphere_center - ray_start;            // intersection test
-  float sphere_len = length(sphere_center - ray_start);            // intersection test
-  float projection = dot(sphere_dir, ray_dir); // intersection test
+  vec3 sphere_dir = sphere_center - ray_start;                  // intersection test
+  float sphere_len = length(sphere_center - ray_start);         // intersection test
+  float projection = dot(sphere_dir, ray_dir);                  // intersection test
   vec3 dir_perpendicular = sphere_dir - (ray_dir * projection); // intersection test
-  float len_dir_perpend = length(dir_perpendicular);       // intersection test
+  float len_dir_perpend = length(dir_perpendicular);            // intersection test
+
+  if (len_dir_perpend > radius) {
+    t = -1.0;
+    return;
+  }
+
+
 
   ////// stufffffff
 }

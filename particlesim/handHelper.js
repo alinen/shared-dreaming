@@ -46,6 +46,9 @@ class HandHelper
 
   update(dt, data) {
     if (this.frames && this.frames[this.frameIndex++]) {
+      if (this.frameIndex > this.metadata.frames) {
+        this.frameIndex = 1;
+      }
       if (this.frames[this.frameIndex]) {
         this.palmPos = this.frames[this.frameIndex][2][0][4];
         this.rgba = this.frames[this.frameIndex][2][0][4]
