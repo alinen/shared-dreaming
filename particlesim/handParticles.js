@@ -68,20 +68,6 @@ class HandParticles
    {
       if (!hand.currentFrame) return false;
 
-      for (var i = 0; i < numHandData && i < this.numSpheres; i++)
-      {
-         hand.fromData(i);
-
-         this.sh.fromData(i, this.data);
-         this.sh.radius = this.params.r; 
-         this.sh.pos[0] = hand.pos[0];
-         this.sh.pos[1] = hand.pos[1];
-         this.sh.pos[2] = hand.pos[2];
-         this.sh.toData(i, this.data);
-
-         console.log(hand.pos[0], hand.pos[1], hand.pos[2]);
-      }
-      
       /*
       for (var i = i; i < this.numSpheres; i++)
       {
@@ -98,7 +84,7 @@ class HandParticles
       }*/
       
       this.reflectAtBoundaries();
-      this.computeAccel();
+      this.computeAccel(hand);
       this.leapfrogStart();
       return true;
    }
@@ -112,46 +98,45 @@ class HandParticles
 
       if (!this.paused && this.initialized)
       {
-        //this.computeAccel(hand);
-        //this.leapfrogStep();
-        for (var i = 0; i < numHandData && i < this.numSpheres; i++)
-        {
-           hand.fromData(i);
-
-           this.sh.fromData(i, this.data);
-           this.sh.radius = this.params.r; 
-           this.sh.pos[0] = hand.pos[0];
-           this.sh.pos[1] = hand.pos[1];
-           this.sh.pos[2] = hand.pos[2];
-           this.sh.toData(i, this.data);
-
-           console.log(hand.pos[0], hand.pos[1], hand.pos[2]);
-        }
+        this.computeAccel(hand);
+        this.leapfrogStep();
       }
     }
 
     computeAccel(hand)
     {
-      // Start with gravity and surface forces
       var spherePos = vec3.create();
-      for (var i = 0; i < this.numSpheres; ++i) 
+      for (var i = 0; i < numHandData && i < this.numSpheres; ++i) 
       {
-        this.sh.fromData(i, this.data);
-        vec3.set(spherePos, this.sh.pos[0], this.sh.pos[1], this.sh.pos[2]);
-        
-        var force = vec3.create();
-        var r = vec3.len(spherePos);
-        vec3.scale(force, spherePos, this.params.g); 
-        vec3.set(this.accelerations[i], force[0], force[1], 0);
-
-        //vec3.set(this.accelerations[i], 0, this.params.g, 0);
-        //vec3.set(this.accelerations[i], 0, 0, 0);
-        for (var j = 0; j < this.obstacles.length; j++)
+        if (hand.getCurrentFrame())
         {
-            // compute repellent force
-            var force = this.capsuleForce(spherePos, this.velocities[i], this.obstacles[j]);
-            vec3.add(this.accelerations[i], this.accelerations[i], force);
-        }    
+          hand.fromData(i);
+          var handPos = vec3.fromValues(hand.pos[0], hand.pos[1], hand.pos[2]);
+
+          this.sh.fromData(i, this.data);
+          vec3.set(spherePos, this.sh.pos[0], this.sh.pos[1], this.sh.pos[2]);
+
+          var distance = vec3.distance(handPos, spherePos);
+          //if (distance > 0.1)
+          {
+            this.sh.pos[0] = hand.pos[0];
+            this.sh.pos[1] = hand.pos[1];
+            this.sh.pos[2] = hand.pos[2];
+            this.sh.toData(i, this.data);
+
+            vec3.set(this.accelerations[i], 0, 0, 0);
+          }
+          /*
+          else
+          {
+            var force = vec3.create();
+            vec3.sub(force, handPos, spherePos); 
+            vec3.scale(force, force, this.params.kIntersect); 
+            vec3.set(this.accelerations[i], force[0], force[1], force[2]);
+          }*/
+
+        }
+
       }
     }
 
