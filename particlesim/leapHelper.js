@@ -10,7 +10,6 @@ function vectorToString(v) {
 var startdate = new Date();
 var startTime = startdate.getTime() * 0.001;
 
-var currentHand = "";
 
 Leap.loop({
 
@@ -33,11 +32,12 @@ frame: function(frame) {
 
   for (var i = 0; i < frame.hands.length; i++) {
     var hand = frame.hands[i];
+    var currentHand = "";
 
     if ("right" == hand.type) {
       myFrame.right["palmPosition"] = hand.palmPosition
       currentHand = "right"
-    };
+    }
     if ("left" == hand.type) {
       myFrame.left["palmPosition"] = hand.palmPosition
       currentHand = "left"
@@ -53,7 +53,7 @@ frame: function(frame) {
       handString += "Sphere radius: " + hand.sphereRadius.toFixed(1) + " mm<br />";
     }
     for (var j = 0; j < hand.pointables.length; j++) {
-      var pointable = frame.pointables[j];
+      var pointable = hand.pointables[j];
 
       var nameMap = ["thumb", "index", "middle", "ring", "pinky"];
       var fingerName = nameMap[pointable.type];
@@ -64,7 +64,6 @@ frame: function(frame) {
       myFrame[currentHand][fingerName].push(pointable.mcpPosition)
       myFrame[currentHand][fingerName].push(pointable.pipPosition)
       myFrame[currentHand][fingerName].push(pointable.dipPosition)
-
       if (debugPrint) {
         handString += "Pointable Name: " + fingerName + "<br />";
         handString += "Pointable ID: " + pointable.id + "<br />";
