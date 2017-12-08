@@ -200,7 +200,7 @@ function drawScene()
    gl.uniform1f(uelapsedTime, elapsedTime);
 
    var uthreshold = gl.getUniformLocation(shaderProgram, "threshold");
-   gl.uniform1f(uthreshold, metaballThreshold);
+   gl.uniform1f(uthreshold, metaballThreshold * (1.0+Math.sin(elapsedTime + Math.random()*0.1)));
 
    var uTextureSize = gl.getUniformLocation(shaderProgram, "size_of_texture");
    gl.uniform1f(uTextureSize, textureSize);
