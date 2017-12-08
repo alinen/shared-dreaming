@@ -60,8 +60,8 @@ void computeColor(in vec3 ray_start, in vec3 ray_dir, out vec4 color)
 
   float fraction_of_screen = intersection_point.y + 2.0 / 4.0;
 
-  vec4 top_color = vec4(0.885, 0.56, 0.7, 1.0);
-  vec4 bottom_color = vec4(0.3845, 0.3616, 0.37, 1.0);
+  vec4 top_color = vec4(0.3845, 0.3616, 0.37, 1.0);
+  vec4 bottom_color = vec4(0.885, 0.56, 0.7, 1.0);
 
   color = top_color * fraction_of_screen + bottom_color * (1.0 - fraction_of_screen);
 }
@@ -88,7 +88,7 @@ void sphereIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 sphere_cente
   }
 }
 
-void palmIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 sphere_center, in float radius, out float t)
+void palmIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 sphere_center, in float radius, out float t, in vec4 palm_pos_2)
 {
   vec3 sphere_dir = sphere_center - ray_start;                  // intersection test
   float sphere_len = length(sphere_center - ray_start);         // intersection test
@@ -101,9 +101,13 @@ void palmIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 sphere_center,
     return;
   }
 
-
-
-  ////// stufffffff
+  float intersection_dist = sqrt(radius * radius - len_dir_perpend * len_dir_perpend);
+  if (sphere_len > radius) {
+    float point1_len = projection - intersection_dist;
+    t = point1_len + palm_pos_2.x;
+  } else {
+    t = projection + intersection_dist;
+  }
 }
 
 void refractionDirection(in float refraction_coef, in vec3 input_dir, in vec3 normal, out vec3 refraction_dir)
@@ -179,13 +183,14 @@ void main ()
       float palm_coord_y = 0.5;
 
       vec4 palm_pos_rad = texture2D(hand_info, vec2(palm_coord_1, palm_coord_y));
+      vec4 palm_pos_2 = texture2D(hand_info, vec2(palm_coord_1 + texel * 0.75, palm_coord_y));
       vec4 palm_color = texture2D(hand_info, vec2(palm_coord_2, palm_coord_y));
 
       float palm_t;
-      sphereIntersection(camera_pos, normalized_view_dir, palm_pos_rad.xyz, palm_pos_rad.w, palm_t);
+      palmIntersection(camera_pos, normalized_view_dir, palm_pos_rad.xyz, palm_pos_rad.w, palm_t, palm_pos_2);
       if (palm_t >= 0.0 && palm_t > t) {
           hit_sphere_pos_rad = palm_pos_rad;
-          hit_sphere_rgb = vec4(0.0,1.0,0.0,1.0);
+          hit_sphere_rgb = vec4(palm_pos_rad.y + 1.0, palm_pos_rad.x, palm_pos_rad.x + 1.0, 1.0);
           t = palm_t;
           break;
       }
