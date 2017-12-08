@@ -91,6 +91,7 @@ class HandParticles
 
    writePosition(idx, pos)
    {
+       if (pos[2] > -0.001) return; // hack for missing data
        this.sh.fromData(idx, this.data);
        this.sh.pos[0] = pos[0];
        this.sh.pos[1] = pos[1];
