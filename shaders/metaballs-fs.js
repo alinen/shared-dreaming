@@ -66,34 +66,6 @@ void computeColor(in vec3 ray_start, in vec3 ray_dir, out vec4 color)
   color = top_color * fraction_of_screen + bottom_color * (1.0 - fraction_of_screen);
 }
 
-void deform0(in vec3 p, in float theta, out float d, out float maxDisplacement)
-{
-   float offset = (1.0 + cos(theta)) * 3.14 * 10.0;
-   d = sin(p.x * p.y * 50.0 + offset) * 0.2;
-   maxDisplacement = 0.2 * 2.0;
-}
-
-void deform3(in vec3 p, in float theta, out float d, out float maxDisplacement)
-{
-   float offset = (1.0 + cos(theta)) * 3.14 * 4.0;
-   d = sin(p.x * p.x * p.y * 50.0 + offset) * 0.2;
-   maxDisplacement = 0.2 * 2.0;
-}
-
-void deform2(in vec3 p, in float theta, out float d, out float maxDisplacement)
-{
-   float offset = (1.0 + cos(theta)) * 3.14 * 4.0;
-   d = sin(p.x * p.x * p.y * p.y * 50.0 + offset) * 0.2;
-   maxDisplacement = 0.2 * 2.0;
-}
-
-void deform1(in vec3 p, in float theta, out float d, out float maxDisplacement)
-{
-   float offset = (1.0 + cos(theta)) * 3.14 * 4.0;
-   d = sin((sin(3.14*0.25) + p.x) * (cos(3.14*0.25)+p.y) * 20.0 * (1.5+cos(theta)) + offset) * 0.2;
-   maxDisplacement = 0.2 * 2.0;
-}
-
 float density1(float a, float b, float r)
 {
   return a * exp(-b * r * r);
@@ -164,7 +136,7 @@ void simple(in vec3 p, out float d, out vec3 normal, out vec4 color)
 void sphereIntersection(in vec3 ray_start, in vec3 ray_dir, out float t, out vec3 normal, out vec4 color)
 {
   t = -1.0;
-  for (float d = 1.5; d < 3.0; d += 0.05) { // everything is at z = -2.0
+  for (float d = 1.0; d < 3.0; d += 0.05) { // everything is at z = -2.0
     vec3 p = ray_start + d * ray_dir;
     float distance = 0.0;
  
