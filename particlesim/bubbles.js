@@ -36,7 +36,7 @@ class Bubbles
        this.sh.rgb = [0.5, 0.0, 0.0];
        this.sh.radius = 0.25;
 
-       for (var i = 0; i < numSpheres; ++i) 
+       for (var i = 0; i < this.numSpheres; ++i) 
        {
           this.sh.radius = getRandom(0.1, 0.3);
           posY -= (prevR + this.sh.radius + getRandom(0.05, 0.1)); 
