@@ -60,8 +60,8 @@ void computeColor(in vec3 ray_start, in vec3 ray_dir, out vec4 color)
 
   float fraction_of_screen = intersection_point.y + 2.0 / 4.0;
 
-  vec4 top_color = vec4(0.25, 0.6, 0.7, 1.0);
-  vec4 bottom_color = vec4(0.6, 0.3, 0.6, 1.0);
+  vec4 top_color = vec4(0.645, 0.616, 0.57, 1.0);
+  vec4 bottom_color = vec4(0.15, 0.56, 0.7, 1.0);
 
   color = top_color * fraction_of_screen + bottom_color * (1.0 - fraction_of_screen);
 }
@@ -86,7 +86,7 @@ void blob(in vec3 p, out float d, out vec3 normal, out vec4 color)
     float tex_coord_2 = (startIndex + 1.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
     float tex_coord_3 = (startIndex + 2.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
     float tex_coord_y = 0.5;
-    
+
     vec4 pos_rad = texture2D(sphere_info, vec2(tex_coord_1, tex_coord_y));
     vec4 vel = texture2D(sphere_info, vec2(tex_coord_2, tex_coord_y));
     vec4 rgb = texture2D(sphere_info, vec2(tex_coord_3, tex_coord_y));
@@ -119,7 +119,7 @@ void simple(in vec3 p, out float d, out vec3 normal, out vec4 color)
     float tex_coord_2 = (startIndex + 1.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
     float tex_coord_3 = (startIndex + 2.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
     float tex_coord_y = 0.5;
-    
+
     vec4 pos_rad = texture2D(sphere_info, vec2(tex_coord_1, tex_coord_y));
     vec4 vel = texture2D(sphere_info, vec2(tex_coord_2, tex_coord_y));
     vec4 rgb = texture2D(sphere_info, vec2(tex_coord_3, tex_coord_y));
@@ -139,7 +139,7 @@ void sphereIntersection(in vec3 ray_start, in vec3 ray_dir, out float t, out vec
   for (float d = 1.0; d < 4.0; d += 0.05) { // everything is at z = -2.0
     vec3 p = ray_start + d * ray_dir;
     float distance = 0.0;
- 
+
     blob(p, distance, normal, color);
     if (distance > threshold) {
        t = d;
@@ -254,7 +254,7 @@ void main ()
     computeColor(point3, normalize(point3_dir), refraction_color); // second sphere intersection
     */
 
-    gl_FragColor = vec4(diffuse_color, 0.0) + specular_color + vec4(0.5 * relection.xyz, 1.0); 
+    gl_FragColor = vec4(diffuse_color, 0.0) + specular_color + vec4(0.5 * relection.xyz, 1.0);
     //gl_FragColor = vec4(abs(hit_sphere_normal), 1.0);
   }
 
