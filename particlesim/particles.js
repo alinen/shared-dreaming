@@ -10,9 +10,9 @@ var pMatrix = mat4.create();
 var shaderProgram;
 var elapsedTime = 0;
 var lastTime = 0;
-var numSpheres = 50;
 var textureId = 0;
 var handTextureId = 1;
+var metaballThreshold = 0.1;
 var gl;
 var numHandData = 2 * (4*5 + 1); // 2 hands * ( 4 fingerJoints * 5 fingers + palmPos)
 var recording = "https://raw.githubusercontent.com/alinen/shared-dreaming/hand-texture/leapMotion_1512680922000.json";
@@ -198,6 +198,9 @@ function drawScene()
 
    var uelapsedTime = gl.getUniformLocation(shaderProgram, "elapsedTime");
    gl.uniform1f(uelapsedTime, elapsedTime);
+
+   var uthreshold = gl.getUniformLocation(shaderProgram, "threshold");
+   gl.uniform1f(uthreshold, metaballThreshold);
 
    var uTextureSize = gl.getUniformLocation(shaderProgram, "size_of_texture");
    gl.uniform1f(uTextureSize, textureSize);

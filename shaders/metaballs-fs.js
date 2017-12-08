@@ -9,6 +9,7 @@ uniform float elapsedTime;
 uniform sampler2D sphere_info; // width = num_of_spheres * 3 * 4; height = 1
 uniform float num_of_spheres;
 uniform float size_of_texture;
+uniform float threshold;
 
 void planeIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 box_normal, in vec3 box_p1,
   out float plane_intersect)
@@ -156,7 +157,7 @@ void simple(in vec3 p, out float d, out vec3 normal, out vec4 color)
     d = density1(a, b, r);
     normal = normalize(dir);
     color = rgb;
-    if (d > 0.8) return;
+    if (d > threshold) return;
   }
 }
 
@@ -168,7 +169,7 @@ void sphereIntersection(in vec3 ray_start, in vec3 ray_dir, out float t, out vec
     float distance = 0.0;
  
     blob(p, distance, normal, color);
-    if (distance > 0.8) {
+    if (distance > threshold) {
        t = d;
        return;
     }
