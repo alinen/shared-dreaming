@@ -78,8 +78,8 @@ void blob(in vec3 p, out float d, out vec3 normal, out vec4 color)
   normal = vec3(0,0,0);
 
   float a = 1.0;
-  float b = 0.5 * 100.0;
-  for (float i = 0.0; i < 11.0; i+=1.0) { // need to hardcode loop
+  float b = 0.5 * 50.0;
+  for (float i = 0.0; i < 10.0; i+=1.0) { // need to hardcode loop
     float startIndex = i * 3.0;
 
     float tex_coord_1 = (startIndex + 0.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
@@ -136,7 +136,7 @@ void simple(in vec3 p, out float d, out vec3 normal, out vec4 color)
 void sphereIntersection(in vec3 ray_start, in vec3 ray_dir, out float t, out vec3 normal, out vec4 color)
 {
   t = -1.0;
-  for (float d = 1.0; d < 3.0; d += 0.05) { // everything is at z = -2.0
+  for (float d = 1.0; d < 4.0; d += 0.05) { // everything is at z = -2.0
     vec3 p = ray_start + d * ray_dir;
     float distance = 0.0;
  
@@ -177,8 +177,8 @@ void main ()
   vec3 normalized_view_dir = normalize(view_dir);
 
   // rotate camera by 45
-  float angle1 = 0.0;
-  float angle2 = 0.0;
+  float angle1 = elapsedTime * 0.1;
+  float angle2 = 0.3;
   // first 3 vars = first column
   mat3 m = mat3(
     cos(angle1), 0, sin(angle1), // first column

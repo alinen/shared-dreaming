@@ -109,19 +109,18 @@ class HandParticles
 
       if (!this.paused && this.initialized && hand.getCurrentFrame())
       {
-            this.writePosition(0, hand.wristPosition('left'));
-            this.writePosition(1, hand.fingerJoint('left', 'index', 3));
-            this.writePosition(2, hand.fingerJoint('left', 'middle', 3));
-            this.writePosition(3, hand.fingerJoint('left', 'ring', 3));
-            this.writePosition(4, hand.fingerJoint('left', 'pinky', 3));
-            this.writePosition(5, hand.fingerJoint('left', 'thumb', 3));
+            var idx = 0;
+            this.writePosition(idx++, hand.fingerJoint('left', 'index', 1));
+            this.writePosition(idx++, hand.fingerJoint('left', 'index', 3));
+            this.writePosition(idx++, hand.fingerJoint('left', 'pinky', 1));
+            this.writePosition(idx++, hand.fingerJoint('left', 'pinky', 3));
+            this.writePosition(idx++, hand.fingerJoint('left', 'thumb', 3));
 
-            this.writePosition(6, hand.wristPosition('right'));
-            this.writePosition(7, hand.fingerJoint('right', 'index', 3));
-            this.writePosition(8, hand.fingerJoint('right', 'middle', 3));
-            this.writePosition(9, hand.fingerJoint('right', 'ring', 3));
-            this.writePosition(10, hand.fingerJoint('right', 'pinky', 3));
-            this.writePosition(11, hand.fingerJoint('right', 'thumb', 3));
+            this.writePosition(idx++, hand.fingerJoint('right', 'index', 1));
+            this.writePosition(idx++, hand.fingerJoint('right', 'index', 3));
+            this.writePosition(idx++, hand.fingerJoint('right', 'pinky', 1));
+            this.writePosition(idx++, hand.fingerJoint('right', 'pinky', 3));
+            this.writePosition(idx++, hand.fingerJoint('right', 'thumb', 3));
        }
        //this.computeAccel(hand);
        //this.leapfrogStep();
