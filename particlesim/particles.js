@@ -243,6 +243,7 @@ function tick()
    requestAnimFrame(tick);
    drawScene();
    lastTime = newTime
+   framesJSONobj.frames.pop()
 }
 
 function webGLStart()

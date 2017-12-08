@@ -86,7 +86,7 @@ frame: function(frame) {
 
 // hand callbacks are run once for each hand in the frame
 hand: function(hand){
-  out.innerHTML += "Hand: " + hand.id + ' &nbsp;roll: ' + Math.round(hand.roll() * Rad2Deg) + '°<br/>'
+  // out.innerHTML += "Hand: " + hand.id + ' &nbsp;roll: ' + Math.round(hand.roll() * Rad2Deg) + '°<br/>'
 }
 
 });
