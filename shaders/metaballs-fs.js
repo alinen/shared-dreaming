@@ -102,10 +102,11 @@ void blob(in vec3 p, out float d, out vec3 normal, out vec4 color)
 {
   d = 0.0;
   color = vec4(1,1,1,1);
+  normal = vec3(0,0,0);
 
   float a = 1.0;
   float b = 0.5 * 100.0;
-  for (float i = 0.0; i < 50.0; i+=1.0) { // need to hardcode loop
+  for (float i = 0.0; i < 2.0; i+=1.0) { // need to hardcode loop
     float startIndex = i * 3.0;
 
     float tex_coord_1 = (startIndex + 0.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
@@ -123,8 +124,8 @@ void blob(in vec3 p, out float d, out vec3 normal, out vec4 color)
     float dd = density1(a, b, r);
     d += dd;
 
-    if (dd > 0.0)
-    normal += -2.0 * b * d * dir;
+    if (dd > 0.8 || (i-0.0) < 0.0001)
+    normal += -2.0 * b * dd * dir;
   }
 
   normal = normalize(normal);
@@ -136,7 +137,7 @@ void simple(in vec3 p, out float d, out vec3 normal, out vec4 color)
   float b = 0.5 * 100.0;
 
   color = vec4(0,0,0,0);
-  for (float i = 0.0; i < 50.0; i+=1.0) { // need to hardcode loop
+  for (float i = 0.0; i < 2.0; i+=1.0) { // need to hardcode loop
     float startIndex = i * 3.0;
 
     float tex_coord_1 = (startIndex + 0.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
@@ -151,21 +152,21 @@ void simple(in vec3 p, out float d, out vec3 normal, out vec4 color)
     vec3 dir = pos_rad.xyz - p;
     float r = length(dir);
     d = density1(a, b, r);
-    normal = -2.0 * b * d * dir;
+    normal = normalize(dir);
     color = rgb;
-    if (d > 0.1) return;
+    if (d > 0.8) return;
   }
 }
 
 void sphereIntersection(in vec3 ray_start, in vec3 ray_dir, out float t, out vec3 normal, out vec4 color)
 {
   t = -1.0;
-  for (float d = 0.5; d < 4.0; d += 0.1) { // everything is at z = -2.0
+  for (float d = 0.5; d < 3.0; d += 0.01) { // everything is at z = -2.0
     vec3 p = ray_start + d * ray_dir;
     float distance = 0.0;
  
     blob(p, distance, normal, color);
-    if (distance > 0.01) {
+    if (distance > 0.8) {
        t = d;
        return;
     }

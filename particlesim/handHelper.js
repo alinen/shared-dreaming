@@ -18,7 +18,9 @@ class HandHelper
     if (jsonName !== undefined)
     {
       this.getFrameData(jsonName);
-    } else {
+    } 
+    else 
+    {
       this.frameData = myFrame;
       this.frames = this.frameData.frames;
       this.center = this.frameData.center;

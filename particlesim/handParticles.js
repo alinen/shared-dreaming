@@ -98,16 +98,17 @@ class HandParticles
 
       if (!this.paused && this.initialized)
       {
+        /*
         for (var i = 0; i < numHandData && i < this.numSpheres; ++i) 
         {
             hand.fromData(i);
             this.sh.fromData(i, this.data);
-            this.sh.pos[0] = hand.pos[0];
-            this.sh.pos[1] = hand.pos[1];
-            this.sh.pos[2] = hand.pos[2];
+            this.sh.pos[0] = 0.0; //hand.pos[0];
+            this.sh.pos[1] = 0.0; //hand.pos[1];
+            this.sh.pos[2] = -2.0; //hand.pos[2];
             this.sh.toData(i, this.data);
-        }
-        //this.computeAccel(hand);
+        }*/
+        this.computeAccel(hand);
         //this.leapfrogStep();
       }
     }
@@ -128,9 +129,9 @@ class HandParticles
           var distance = vec3.distance(handPos, spherePos);
           //if (distance > 0.1)
           {
-            this.sh.pos[0] = hand.pos[0];
-            this.sh.pos[1] = hand.pos[1];
-            this.sh.pos[2] = hand.pos[2];
+            this.sh.pos[0] = 0.0; //hand.pos[0];
+            this.sh.pos[1] = Math.cos(elapsedTime * 0.1); //hand.pos[1];
+            this.sh.pos[2] = -2.0 + 1.5 * Math.sin(elapsedTime * 0.1 + i); //hand.pos[2];
             this.sh.toData(i, this.data);
 
             //console.log(this.sh.pos[0]);
