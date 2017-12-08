@@ -83,10 +83,20 @@ class HandParticles
          vec3.set(this.vh[i], 0,0,0);
       }*/
       
-      this.reflectAtBoundaries();
-      this.computeAccel(hand);
-      this.leapfrogStart();
+      //this.reflectAtBoundaries();
+      //this.computeAccel(hand);
+      //this.leapfrogStart();
       return true;
+   }
+
+   writePosition(idx, pos)
+   {
+       this.sh.fromData(idx, this.data);
+       this.sh.pos[0] = pos[0];
+       this.sh.pos[1] = pos[1];
+       this.sh.pos[2] = pos[2];
+       //console.log(pos[0]+" "+pos[1]+" "+pos[2]);
+       this.sh.toData(idx, this.data);
    }
 
     update(dt, hand)  // ASN TODO: Fixed framerate or application framerate?
@@ -96,21 +106,24 @@ class HandParticles
         this.initialized = this.init(hand);
       }
 
-      if (!this.paused && this.initialized)
+      if (!this.paused && this.initialized && hand.getCurrentFrame())
       {
-        /*
-        for (var i = 0; i < numHandData && i < this.numSpheres; ++i) 
-        {
-            hand.fromData(i);
-            this.sh.fromData(i, this.data);
-            this.sh.pos[0] = 0.0; //hand.pos[0];
-            this.sh.pos[1] = 0.0; //hand.pos[1];
-            this.sh.pos[2] = -2.0; //hand.pos[2];
-            this.sh.toData(i, this.data);
-        }*/
-        this.computeAccel(hand);
-        //this.leapfrogStep();
-      }
+            this.writePosition(0, hand.wristPosition('left'));
+            this.writePosition(1, hand.fingerJoint('left', 'index', 3));
+            this.writePosition(2, hand.fingerJoint('left', 'middle', 3));
+            this.writePosition(3, hand.fingerJoint('left', 'ring', 3));
+            this.writePosition(4, hand.fingerJoint('left', 'pinky', 3));
+            this.writePosition(5, hand.fingerJoint('left', 'thumb', 3));
+
+            this.writePosition(6, hand.wristPosition('right'));
+            this.writePosition(7, hand.fingerJoint('right', 'index', 3));
+            this.writePosition(8, hand.fingerJoint('right', 'middle', 3));
+            this.writePosition(9, hand.fingerJoint('right', 'ring', 3));
+            this.writePosition(10, hand.fingerJoint('right', 'pinky', 3));
+            this.writePosition(11, hand.fingerJoint('right', 'thumb', 3));
+       }
+       //this.computeAccel(hand);
+       //this.leapfrogStep();
     }
 
     computeAccel(hand)
@@ -129,9 +142,9 @@ class HandParticles
           var distance = vec3.distance(handPos, spherePos);
           //if (distance > 0.1)
           {
-            this.sh.pos[0] = 0.0; //hand.pos[0];
-            this.sh.pos[1] = Math.cos(elapsedTime * 0.1); //hand.pos[1];
-            this.sh.pos[2] = -2.0 + 1.5 * Math.sin(elapsedTime * 0.1 + i); //hand.pos[2];
+            this.sh.pos[0] = hand.pos[0];
+            this.sh.pos[1] = hand.pos[1];
+            this.sh.pos[2] = hand.pos[2];
             this.sh.toData(i, this.data);
 
             //console.log(this.sh.pos[0]);

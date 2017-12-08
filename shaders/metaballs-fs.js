@@ -106,7 +106,7 @@ void blob(in vec3 p, out float d, out vec3 normal, out vec4 color)
 
   float a = 1.0;
   float b = 0.5 * 100.0;
-  for (float i = 0.0; i < 2.0; i+=1.0) { // need to hardcode loop
+  for (float i = 0.0; i < 11.0; i+=1.0) { // need to hardcode loop
     float startIndex = i * 3.0;
 
     float tex_coord_1 = (startIndex + 0.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
@@ -124,8 +124,10 @@ void blob(in vec3 p, out float d, out vec3 normal, out vec4 color)
     float dd = density1(a, b, r);
     d += dd;
 
-    if (dd > 0.8 || (i-0.0) < 0.0001)
-    normal += -2.0 * b * dd * dir;
+    if (dd > 0.0 || ((i-0.0) < 0.0001))
+    {
+      normal += -2.0 * b * dd * dir;
+    }
   }
 
   normal = normalize(normal);
@@ -137,7 +139,7 @@ void simple(in vec3 p, out float d, out vec3 normal, out vec4 color)
   float b = 0.5 * 100.0;
 
   color = vec4(0,0,0,0);
-  for (float i = 0.0; i < 2.0; i+=1.0) { // need to hardcode loop
+  for (float i = 0.0; i < 11.0; i+=1.0) { // need to hardcode loop
     float startIndex = i * 3.0;
 
     float tex_coord_1 = (startIndex + 0.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
@@ -161,7 +163,7 @@ void simple(in vec3 p, out float d, out vec3 normal, out vec4 color)
 void sphereIntersection(in vec3 ray_start, in vec3 ray_dir, out float t, out vec3 normal, out vec4 color)
 {
   t = -1.0;
-  for (float d = 0.5; d < 3.0; d += 0.01) { // everything is at z = -2.0
+  for (float d = 1.5; d < 3.0; d += 0.05) { // everything is at z = -2.0
     vec3 p = ray_start + d * ray_dir;
     float distance = 0.0;
  
@@ -279,8 +281,8 @@ void main ()
     computeColor(point3, normalize(point3_dir), refraction_color); // second sphere intersection
     */
 
-    //gl_FragColor = vec4(diffuse_color, 0.0) + specular_color + vec4(0.5 * relection.xyz, 1.0); 
-    gl_FragColor = vec4(abs(hit_sphere_normal), 1.0);
+    gl_FragColor = vec4(diffuse_color, 0.0) + specular_color + vec4(0.5 * relection.xyz, 1.0); 
+    //gl_FragColor = vec4(abs(hit_sphere_normal), 1.0);
   }
 
 }

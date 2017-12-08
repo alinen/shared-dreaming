@@ -86,6 +86,24 @@ class HandHelper
     return this.currentFrame;
   }
 
+  wristPosition(which) 
+  {
+    if (Object.keys(this.currentFrame[which]).length !== 0)
+    {
+      return this.normalizeValues(this.currentFrame[which]['middle'][0]);
+    }
+    return [0,0,0];
+  }
+
+  fingerJoint(which, finger, idx) 
+  {
+    if (Object.keys(this.currentFrame[which]).length !== 0)
+    {
+      return this.normalizeValues(this.currentFrame[which][finger][idx]);
+    }
+    return [0,0,0];
+  }
+
   parseRecordedData(frames, length) {
     var nameMap = ["thumb", "index", "middle", "ring", "pinky"];
     if (frames && this.frameIndex < frames.length) {
