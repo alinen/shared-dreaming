@@ -60,8 +60,8 @@ void computeColor(in vec3 ray_start, in vec3 ray_dir, out vec4 color)
 
   float fraction_of_screen = intersection_point.y + 2.0 / 4.0;
 
-  vec4 top_color = vec4(0.25, 0.6, 0.7, 1.0);
-  vec4 bottom_color = vec4(0.6, 0.3, 0.6, 1.0);
+  vec4 top_color = vec4(0.885, 0.56, 0.7, 1.0);
+  vec4 bottom_color = vec4(0.3845, 0.3616, 0.37, 1.0);
 
   color = top_color * fraction_of_screen + bottom_color * (1.0 - fraction_of_screen);
 }
