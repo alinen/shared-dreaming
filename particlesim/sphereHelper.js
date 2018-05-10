@@ -47,8 +47,18 @@ class SphereHelper
      data[i + 11] = 1.0; // free for now      
    }
 
-   update(idx, dt, data)
+   update(idx, dt, data, hand)
    {
+     var wind = 0;
+     if (hand !== undefined && hand.getCurrentFrame())
+     {
+       var wrist = hand.wristPosition('left');
+       if (wrist[2] < 0.0001)
+       {
+         wind = wrist[0] * 0.5;
+       }
+     }
+
      this.fromData(idx, data);
 
      var finished = false;
@@ -58,7 +68,7 @@ class SphereHelper
         this.pos[1] = y; // put this sphere behind the sphere it's following
         //console.log("reset: "+y +" "+previ
      }
-     this.pos[0] = this.vel[0] + Math.sin(elapsedTime+idx)*0.15; // hack, vel[0] has starting x
+     this.pos[0] = this.vel[0] + Math.sin(elapsedTime+idx)*0.15 + wind; // hack, vel[0] has starting x
      this.pos[1] += this.vel[1] * dt;
      this.pos[2] += this.vel[2] * dt;
      this.toData(idx, data);

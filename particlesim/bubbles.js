@@ -11,11 +11,11 @@ class Bubbles
         this.setupSpheres();
     }
 
-    update(dt)
+    update(dt, hand)
     {
         for (var i = 0; i < this.numSpheres; ++i) 
         {
-           this.sh.update(i, dt, this.data);
+           this.sh.update(i, dt, this.data, hand);
         }
     }
 
