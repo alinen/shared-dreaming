@@ -200,7 +200,7 @@ function drawScene()
    gl.uniform1f(uelapsedTime, elapsedTime);
 
    var uthreshold = gl.getUniformLocation(shaderProgram, "threshold");
-   var threshold = 0.85 * (Math.max(0.1, Math.sin(elapsedTime)));
+   var threshold = 0.5; // ASN MOD 0.85 * (Math.max(0.1, Math.sin(elapsedTime)));
    gl.uniform1f(uthreshold, threshold);
 
    var uTextureSize = gl.getUniformLocation(shaderProgram, "size_of_texture");

@@ -112,7 +112,7 @@ void simple(in vec3 p, out float d, out vec3 normal, out vec4 color)
   float b = 0.5 * 100.0;
 
   color = vec4(0,0,0,0);
-  for (float i = 0.0; i < 11.0; i+=1.0) { // need to hardcode loop
+  for (float i = 0.0; i < 10.0; i+=1.0) { // need to hardcode loop
     float startIndex = i * 3.0;
 
     float tex_coord_1 = (startIndex + 0.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
@@ -135,12 +135,67 @@ void simple(in vec3 p, out float d, out vec3 normal, out vec4 color)
 
 void sphereIntersection(in vec3 ray_start, in vec3 ray_dir, out float t, out vec3 normal, out vec4 color)
 {
+  t = -1.0; 
+  float closest = 100.0; // initialize with 'max' value, our world is ~ [-2,2]
+  for (float i = 0.0; i < 30.0; i+=1.0) // need to hardcode loop
+  { 
+    float startIndex = i * 3.0;
+
+    float tex_coord_1 = (startIndex + 0.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
+    float tex_coord_2 = (startIndex + 1.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
+    float tex_coord_3 = (startIndex + 2.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
+    float tex_coord_y = 0.5;
+
+    vec4 pos_rad = texture2D(sphere_info, vec2(tex_coord_1, tex_coord_y));
+    vec4 vel = texture2D(sphere_info, vec2(tex_coord_2, tex_coord_y));
+    vec4 rgb = texture2D(sphere_info, vec2(tex_coord_3, tex_coord_y));
+    float radius = 0.05; // pos_rad.w;
+
+    vec3 sphere_dir = pos_rad.xyz - ray_start;            // intersection test
+    float sphere_len = length(pos_rad.xyz - ray_start);            // intersection test
+    float projection = dot(sphere_dir, ray_dir); // intersection test
+    vec3 dir_perpendicular = sphere_dir - (ray_dir * projection); // intersection test
+    float len_dir_perpend = length(dir_perpendicular);       // intersection test
+
+    if (len_dir_perpend > radius) 
+    {
+      continue;
+    }
+
+    float intersection_dist = sqrt(radius * radius - len_dir_perpend * len_dir_perpend);
+    if (sphere_len > radius) 
+    {
+      float point1_len = projection - intersection_dist;
+      if (point1_len < closest)
+      {
+        closest = point1_len;
+        normal = normalize(ray_start + closest * ray_dir - pos_rad.xyz);
+        color = rgb;
+      }
+    } 
+    else 
+    {
+      float point1_len = projection + intersection_dist;
+      if (point1_len < closest)
+      {
+        closest = point1_len;
+        normal = normalize(ray_start + closest * ray_dir - pos_rad.xyz);
+        color = rgb;
+      }
+    }
+  }
+  if (length(normal) > 0.0) t = closest;
+}
+
+void metaballIntersection(in vec3 ray_start, in vec3 ray_dir, out float t, out vec3 normal, out vec4 color)
+{
   t = -1.0;
   for (float d = 1.0; d < 4.0; d += 0.05) { // everything is at z = -2.0
     vec3 p = ray_start + d * ray_dir;
     float distance = 0.0;
 
     blob(p, distance, normal, color);
+
     if (distance > threshold) {
        t = d;
        return;
@@ -177,7 +232,7 @@ void main ()
   vec3 normalized_view_dir = normalize(view_dir);
 
   // rotate camera by 45
-  float angle1 = elapsedTime * 0.1;
+  float angle1 = 0.0; //elapsedTime * 0.1;
   float angle2 = 0.3;
   // first 3 vars = first column
   mat3 m = mat3(
@@ -199,10 +254,9 @@ void main ()
   sphereIntersection(camera_pos, normalized_view_dir, t, hit_sphere_normal, hit_sphere_rgb);
 
   if (t < 0.0) {
-    vec4 color;
+    vec4 color = vec4(1.0,0.0,0.0,1.0);
     computeColor(camera_pos, normalized_view_dir, color);
     gl_FragColor = color;
-    //gl_FragColor = vec4(0,0,0,1);
 
   } else {
     vec4 ambient_color = vec4(0.1750, 0.1750, 0.1750, 1.0);
