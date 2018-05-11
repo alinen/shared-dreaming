@@ -10,6 +10,10 @@ uniform sampler2D sphere_info; // width = num_of_spheres * 3 * 4; height = 1
 uniform float num_of_spheres;
 uniform float size_of_texture;
 uniform float threshold;
+uniform vec3 left_bs_center;
+uniform float left_bs_radius;
+uniform vec3 right_bs_center;
+uniform float right_bs_radius;
 
 void planeIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 box_normal, in vec3 box_p1,
   out float plane_intersect)
@@ -68,36 +72,55 @@ void computeColor(in vec3 ray_start, in vec3 ray_dir, out vec4 color)
 
 float density1(float a, float b, float r)
 {
-  return a * exp(-b * r * r);
+  return abs(a * exp(-b * r * r));
 }
 
-void blob(in vec3 p, out float d, out vec3 normal, out vec4 color)
+void getVel(float startIndex, out vec4 vel)
+{
+  float tex_coord_2 = (startIndex + 1.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
+  float tex_coord_y = 0.5;
+  vel = texture2D(sphere_info, vec2(tex_coord_2, tex_coord_y));
+}
+
+void getColor(float startIndex, out vec4 color)
+{
+  float tex_coord_3 = (startIndex + 2.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
+  float tex_coord_y = 0.5;
+  color = texture2D(sphere_info, vec2(tex_coord_3, tex_coord_y));
+}
+
+void getPosition(float startIndex, out vec3 center)
+{
+  float tex_coord_1 = (startIndex + 0.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
+  float tex_coord_y = 0.5;
+
+  vec4 pos_rad = texture2D(sphere_info, vec2(tex_coord_1, tex_coord_y));
+  float R = 0.05;
+  float r = sin(elapsedTime+startIndex*2.0)+1.1;
+  float x = r*R*cos(elapsedTime+startIndex); 
+  float y = r*R*sin(elapsedTime+startIndex); 
+  center = pos_rad.xyz + vec3(x,y,y); 
+}
+
+void blob(in vec3 p, in float[3] spheres, out float d, out vec3 normal, out vec4 color)
 {
   d = 0.0;
-  color = vec4(1,1,1,1);
-  normal = vec3(0,0,0);
-
   float a = 1.0;
-  float b = 0.5 * 50.0;
-  for (float i = 0.0; i < 10.0; i+=1.0) { // need to hardcode loop
-    float startIndex = i * 3.0;
+  float b = 5000.0;
+  for (int i = 0; i < 3; i++) // need to hardcode loop
+  { 
+    float startIndex = spheres[i] * 3.0;
+    if (startIndex < 0.0) continue;
 
-    float tex_coord_1 = (startIndex + 0.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
-    float tex_coord_2 = (startIndex + 1.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
-    float tex_coord_3 = (startIndex + 2.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
-    float tex_coord_y = 0.5;
-
-    vec4 pos_rad = texture2D(sphere_info, vec2(tex_coord_1, tex_coord_y));
-    vec4 vel = texture2D(sphere_info, vec2(tex_coord_2, tex_coord_y));
-    vec4 rgb = texture2D(sphere_info, vec2(tex_coord_3, tex_coord_y));
-
-    vec3 dir = pos_rad.xyz - p;
+    vec3 center;
+    getPosition(startIndex, center);
+    vec3 dir = center - p; // todo: updat eposition based on time
     float r = length(dir);
 
     float dd = density1(a, b, r);
     d += dd;
 
-    if (dd > 0.0 || ((i-0.0) < 0.0001))
+    if (dd > 0.0)
     {
       normal += -2.0 * b * dd * dir;
     }
@@ -106,100 +129,96 @@ void blob(in vec3 p, out float d, out vec3 normal, out vec4 color)
   normal = normalize(normal);
 }
 
-void simple(in vec3 p, out float d, out vec3 normal, out vec4 color)
-{
-  float a = 1.0;
-  float b = 0.5 * 100.0;
-
-  color = vec4(0,0,0,0);
-  for (float i = 0.0; i < 10.0; i+=1.0) { // need to hardcode loop
-    float startIndex = i * 3.0;
-
-    float tex_coord_1 = (startIndex + 0.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
-    float tex_coord_2 = (startIndex + 1.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
-    float tex_coord_3 = (startIndex + 2.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
-    float tex_coord_y = 0.5;
-
-    vec4 pos_rad = texture2D(sphere_info, vec2(tex_coord_1, tex_coord_y));
-    vec4 vel = texture2D(sphere_info, vec2(tex_coord_2, tex_coord_y));
-    vec4 rgb = texture2D(sphere_info, vec2(tex_coord_3, tex_coord_y));
-
-    vec3 dir = pos_rad.xyz - p;
-    float r = length(dir);
-    d = density1(a, b, r);
-    normal = normalize(dir);
-    color = rgb;
-    if (d > threshold) return;
-  }
-}
-
-void sphereIntersection(in vec3 ray_start, in vec3 ray_dir, out float t, out vec3 normal, out vec4 color)
-{
-  t = -1.0; 
-  float closest = 100.0; // initialize with 'max' value, our world is ~ [-2,2]
-  for (float i = 0.0; i < 30.0; i+=1.0) // need to hardcode loop
-  { 
-    float startIndex = i * 3.0;
-
-    float tex_coord_1 = (startIndex + 0.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
-    float tex_coord_2 = (startIndex + 1.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
-    float tex_coord_3 = (startIndex + 2.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
-    float tex_coord_y = 0.5;
-
-    vec4 pos_rad = texture2D(sphere_info, vec2(tex_coord_1, tex_coord_y));
-    vec4 vel = texture2D(sphere_info, vec2(tex_coord_2, tex_coord_y));
-    vec4 rgb = texture2D(sphere_info, vec2(tex_coord_3, tex_coord_y));
-    float radius = 0.05; // pos_rad.w;
-
-    vec3 sphere_dir = pos_rad.xyz - ray_start;            // intersection test
-    float sphere_len = length(pos_rad.xyz - ray_start);            // intersection test
-    float projection = dot(sphere_dir, ray_dir); // intersection test
-    vec3 dir_perpendicular = sphere_dir - (ray_dir * projection); // intersection test
-    float len_dir_perpend = length(dir_perpendicular);       // intersection test
-
-    if (len_dir_perpend > radius) 
-    {
-      continue;
-    }
-
-    float intersection_dist = sqrt(radius * radius - len_dir_perpend * len_dir_perpend);
-    if (sphere_len > radius) 
-    {
-      float point1_len = projection - intersection_dist;
-      if (point1_len < closest)
-      {
-        closest = point1_len;
-        normal = normalize(ray_start + closest * ray_dir - pos_rad.xyz);
-        color = rgb;
-      }
-    } 
-    else 
-    {
-      float point1_len = projection + intersection_dist;
-      if (point1_len < closest)
-      {
-        closest = point1_len;
-        normal = normalize(ray_start + closest * ray_dir - pos_rad.xyz);
-        color = rgb;
-      }
-    }
-  }
-  if (length(normal) > 0.0) t = closest;
-}
-
-void metaballIntersection(in vec3 ray_start, in vec3 ray_dir, out float t, out vec3 normal, out vec4 color)
+void metaballIntersection(in vec3 ray_start, in vec3 ray_dir, in float[3] spheres, out float t, out vec3 normal, out vec4 color)
 {
   t = -1.0;
-  for (float d = 1.0; d < 4.0; d += 0.05) { // everything is at z = -2.0
+  for (float d = 0.0; d < 0.5; d += 0.05) { // everything is at z = -2.0; distance should be test radius * 2
     vec3 p = ray_start + d * ray_dir;
-    float distance = 0.0;
+    float density = 0.0;
 
-    blob(p, distance, normal, color);
+    blob(p, spheres, density, normal, color);
 
-    if (distance > threshold) {
+    if (density > 0.0) {
        t = d;
        return;
     }
+  }
+}
+
+void sphereIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 center, in float radius, out float t)
+{
+  vec3 sphere_dir = center - ray_start;            // intersection test
+  float sphere_len = length(center - ray_start);            // intersection test
+  float projection = dot(sphere_dir, ray_dir); // intersection test
+  vec3 dir_perpendicular = sphere_dir - (ray_dir * projection); // intersection test
+  float len_dir_perpend = length(dir_perpendicular);       // intersection test
+  if (len_dir_perpend > radius) 
+  {
+    t = -1.0;
+    return;
+  }
+
+  float intersection_dist = sqrt(radius * radius - len_dir_perpend * len_dir_perpend);
+  if (sphere_len > radius) 
+  {
+    t = projection - intersection_dist;
+  } 
+  else 
+  {
+    t = projection + intersection_dist;
+  }
+}
+
+void checkSpheres(in vec3 ray_start, in vec3 ray_dir, out float t, out vec3 normal, out vec4 color)
+{
+  float leftTime = -1.0;
+  sphereIntersection(ray_start, ray_dir, left_bs_center, left_bs_radius, leftTime);
+
+  float rightTime = -1.0;
+  sphereIntersection(ray_start, ray_dir, right_bs_center, right_bs_radius, rightTime);
+
+  t = -1.0;
+  if (leftTime < 0.0 && rightTime < 0.0) 
+  {
+    return;
+  }
+
+  // Idea: check all intersecting spheres to collectd density (use larger radius than spheres)
+  float spheres[3];
+  spheres[0] = -1.0;
+  spheres[1] = -1.0;
+  spheres[2] = -1.0;
+
+  int numFound = 0;
+  float closest = 100.0;
+  for (float i = 0.0; i < 500.0; i+=1.0) // need to hardcode loop
+  { 
+    float startIndex = i * 3.0;
+    float radius = 0.1; // ASN TODO: why doesn't this work? pos_rad.w;
+
+    vec3 center;
+    getPosition(startIndex, center);
+
+    float hitTime = -1.0;
+    sphereIntersection(ray_start, ray_dir, center, radius, hitTime);
+    if (hitTime > 0.0 && hitTime < closest) 
+    {
+       /*if (numFound == 0) spheres[0] = i;
+       else if (numFound == 1) spheres[1] = i;
+       else if (numFound == 2) spheres[2] = i;
+       numFound++;*/
+       closest = hitTime;
+       spheres[0] = i;
+    } 
+  }
+
+  if (closest < 100.0)
+  {
+    color = vec4(1,1,1,1);
+    normal = vec3(0,0,0);
+    vec3 start = ray_start + closest * ray_dir;
+    metaballIntersection(start, ray_dir, spheres, t, normal, color);
+    if (t > 0.0) t += closest;
   }
 }
 
@@ -251,7 +270,7 @@ void main ()
   float t = -1.0;
   vec3 hit_sphere_normal = vec3(0,0,0);
   vec4 hit_sphere_rgb = vec4(0.0, 1.0, 0.0, 0.0);
-  sphereIntersection(camera_pos, normalized_view_dir, t, hit_sphere_normal, hit_sphere_rgb);
+  checkSpheres(camera_pos, normalized_view_dir, t, hit_sphere_normal, hit_sphere_rgb);
 
   if (t < 0.0) {
     vec4 color = vec4(1.0,0.0,0.0,1.0);

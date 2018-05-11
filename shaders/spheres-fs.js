@@ -198,11 +198,10 @@ void checkSpheres(in vec3 ray_start, in vec3 ray_dir, out float t, out vec3 norm
     vec4 vel = texture2D(sphere_info, vec2(tex_coord_2, tex_coord_y));
     vec4 rgb = texture2D(sphere_info, vec2(tex_coord_3, tex_coord_y));
     float radius = 0.02; // ASN TODO: why doesn't this work? pos_rad.w;
-    float R = 0.05,
-          r = 0.03,
-          d = 0.05;
-    float x = R*cos(elapsedTime+i); 
-    float y = R*sin(elapsedTime+i); 
+    float R = 0.05;
+    float r = sin(elapsedTime+i*2.0)+1.1;
+    float x = r*R*cos(elapsedTime+i); 
+    float y = r*R*sin(elapsedTime+i); 
     vec3 center = pos_rad.xyz + vec3(x,y,y); 
 
     float hitTime = -1.0;
@@ -212,7 +211,6 @@ void checkSpheres(in vec3 ray_start, in vec3 ray_dir, out float t, out vec3 norm
         closest = hitTime;
         normal = normalize(ray_start + closest * ray_dir - center);
         color = rgb;
-        break;
     } 
   }
   if (length(normal) > 0.0) t = closest;

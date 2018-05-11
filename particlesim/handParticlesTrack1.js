@@ -98,7 +98,7 @@ class HandParticlesTrack1
    updateBoundingSphere(hand, which)
    {
        var pos = hand.fingerJoint(which, 'middle', 1);
-       var radius = 0.5;
+       var radius = 0.75;
        if (pos[2] > -0.001)
        {
          radius = 0.0;
