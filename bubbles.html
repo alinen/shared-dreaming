@@ -1,38 +1,41 @@
 <html>
 
 <head>
-<title>.oOLeapMotionOo.</title>
+<title>bubbles</title>
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
-  <script type="text/javascript" src="glmatrix-min.js"></script>
-  <script type="text/javascript" src="webgl-utils.js"></script>
-  <script type="text/javascript" src="shaders/bubbles-fs.js"></script>
-  <script type="text/javascript" src="shaders/bubbles-vs.js"></script>
-  <script type="text/javascript" src="particlesim/utils.js"></script>
-  <script type="text/javascript" src="particlesim/sphereHelper.js"></script>
-  <script type="text/javascript" src="particlesim/handHelper.js"></script>
-  <script type="text/javascript" src="particlesim/bubbles.js"></script>
-  <script type="text/javascript" src="particlesim/particles.js"></script>
-  <script type="text/javascript" src="particlesim/paramsBubbles.js"></script>
+<script type="text/javascript" src="glmatrix-min.js"></script>
+<script type="text/javascript" src="webgl-utils.js"></script>
 
-  <script src="leap-0.6.4.min.js"></script>
+<!-- shaders -->
+<script type="text/javascript" src="shaders/bubbles-fs.js"></script>
+<script type="text/javascript" src="shaders/bubbles-vs.js"></script>
 
-    <style>
-      body {
-        line-height: 1em;
-        font-size: 1em;
-        font-family: Helvetica;
-      }
-    </style>
+<script type="text/javascript" src="particlesim/utils.js"></script>
+<script type="text/javascript" src="particlesim/sphereHelper.js"></script>
+<script type="text/javascript" src="particlesim/handHelper.js"></script>
+<script type="text/javascript" src="particlesim/bubbles.js"></script>
+<script type="text/javascript" src="particlesim/particles.js"></script>
+<script type="text/javascript" src="particlesim/paramsBubbles.js"></script>
 
-  </head>
+<script src="leap-0.6.4.min.js"></script>
 
-  <body><body onload="webGLStart();">
-    <canvas id="canvas" style="border: none;" width="720" height="480"></canvas>
-    <div id="out"></div>
+  <style>
+    body {
+      line-height: 1em;
+      font-size: 1em;
+      font-family: Helvetica;
+    }
+  </style>
 
-  </body>
+</head>
 
-  <script type="text/javascript" src="particlesim/leapHelper.js"></script>
+<body><body onload="webGLStart();">
+  <canvas id="canvas" style="border: none;" width="720" height="480"></canvas>
+  <div id="out"></div>
+
+</body>
+
+<script type="text/javascript" src="particlesim/leapHelper.js"></script>
 
 </html>
