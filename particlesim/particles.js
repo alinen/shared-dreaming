@@ -206,11 +206,23 @@ function drawScene()
    var uTextureSize = gl.getUniformLocation(shaderProgram, "size_of_texture");
    gl.uniform1f(uTextureSize, textureSize);
 
-      var uHandTextureSize = gl.getUniformLocation(shaderProgram, "size_of_hand_texture");
+   var uHandTextureSize = gl.getUniformLocation(shaderProgram, "size_of_hand_texture");
    gl.uniform1f(uHandTextureSize, handTextureSize);
 
    var uNumSpheres = gl.getUniformLocation(shaderProgram, "num_of_spheres");
    gl.uniform1f(uNumSpheres, system.numSpheres);
+
+   var uleftbscenter = gl.getUniformLocation(shaderProgram, "left_bs_center");
+   gl.uniform3f(uleftbscenter, system.leftBsCenter[0], system.leftBsCenter[1], system.leftBsCenter[2]);
+
+   var urightbscenter = gl.getUniformLocation(shaderProgram, "right_bs_center");
+   gl.uniform3f(urightbscenter, system.rightBsCenter[0], system.rightBsCenter[1], system.rightBsCenter[2]);
+
+   var uleftbsradius = gl.getUniformLocation(shaderProgram, "left_bs_radius");
+   gl.uniform1f(uleftbsradius, system.leftBsRadius);
+
+   var urightbsradius = gl.getUniformLocation(shaderProgram, "right_bs_radius");
+   gl.uniform1f(urightbsradius, system.rightBsRadius);
 
    gl.activeTexture(gl.TEXTURE0);
    gl.bindTexture(gl.TEXTURE_2D, textureId);

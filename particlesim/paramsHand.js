@@ -17,5 +17,5 @@ class Params
    }  
 };
 
-var system = createSystem(50, 55); 
+var system = createSystem(500, 500); 
 

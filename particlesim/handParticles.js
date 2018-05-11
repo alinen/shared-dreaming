@@ -1,3 +1,5 @@
+// Integrates leap hand and SPH (wip)
+//
 class Obstacle
 {
     constructor(start, end, radius)
