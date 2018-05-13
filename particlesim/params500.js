@@ -1,7 +1,7 @@
 
 class Params
 {
-   constructor() 
+   constructor()
    {
       this.h = 0.15; // particle neighborhood size
       this.r = 0.05; // particle size
@@ -12,10 +12,10 @@ class Params
       this.g = -0.01; // gravity strength
       this.min = vec3.fromValues(-2, -1.25, -2);
       this.max = vec3.fromValues(2, 1.25, 2);
-      this.maxacc = 0.000001;
-      this.kIntersect = 0.001;
-   }  
+      this.maxacc = 0.5;
+      this.kIntersect = 10;
+   }
 };
 
-var system = createSystem(498, 500); 
+var system = createSystem(498, 500);
 
