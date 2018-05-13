@@ -72,7 +72,17 @@ void computeColor(in vec3 ray_start, in vec3 ray_dir, out vec4 color)
 
 float density1(float a, float b, float r)
 {
-  return abs(a * exp(-b * r * r));
+  if (r < b * 0.3)
+  {
+    float ratio = r/b;
+    return a * (1.0 - ratio * ratio);
+  }
+  else if (r < b)
+  {
+    float ratio = r/b;
+    return 1.5 * a * (1.0 - ratio) * (1.0 - ratio); 
+  }
+  return 0.0;
 }
 
 void getVel(float startIndex, out vec4 vel)
@@ -159,7 +169,6 @@ void sphereIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 center, in f
   }
 
   float intersection_dist = sqrt(radius * radius - len_dir_perpend * len_dir_perpend);
-  // for metaball intersection, don't push the point to the surface!
   if (sphere_len > radius) 
   {
     t = projection - intersection_dist;
@@ -170,13 +179,44 @@ void sphereIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 center, in f
   }
 }
 
+void blobIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 center, in float radius, out float t,
+    out float density, out vec3 normal, out vec3 color)
+{
+  vec3 sphere_dir = center - ray_start;            // intersection test
+  float sphere_len = length(center - ray_start);            // intersection test
+  float projection = dot(sphere_dir, ray_dir); // intersection test
+  vec3 dir_perpendicular = sphere_dir - (ray_dir * projection); // intersection test
+  float len_dir_perpend = length(dir_perpendicular);       // intersection test
+  if (len_dir_perpend > radius) 
+  {
+    t = -1.0;
+    return;
+  }
+
+  float intersection_dist = sqrt(radius * radius - len_dir_perpend * len_dir_perpend);
+  if (sphere_len > radius) 
+  {
+    t = projection - intersection_dist;
+  } 
+  else 
+  {
+    t = projection + intersection_dist;
+  }
+
+  // where is the surface?
+  for (float tt = t; tt < 0.1; tt += 0.05)
+  {
+  }
+}
+
+
 void checkSpheres(in vec3 ray_start, in vec3 ray_dir, out float t, out vec3 normal, out vec4 color)
 {
   float leftTime = -1.0;
-  sphereIntersection(ray_start, ray_dir, left_bs_center, left_bs_radius, leftTime);
+  //sphereIntersection(ray_start, ray_dir, left_bs_center, left_bs_radius, leftTime);
 
   float rightTime = -1.0;
-  sphereIntersection(ray_start, ray_dir, right_bs_center, right_bs_radius, rightTime);
+  //sphereIntersection(ray_start, ray_dir, right_bs_center, right_bs_radius, rightTime);
 
   t = -1.0;
   if (leftTime < 0.0 && rightTime < 0.0) 
@@ -215,7 +255,7 @@ void checkSpheres(in vec3 ray_start, in vec3 ray_dir, out float t, out vec3 norm
       vec3 dir = center - p; // todo: updat eposition based on time
       float r = length(dir);
 
-      float b = 1000.0;
+      float b = 10.0;
       float dd = density1(radius, b, r);
       density += dd;
 
