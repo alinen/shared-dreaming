@@ -88,10 +88,17 @@ class HandParticlesTrack1
       idx = this.updateFinger(idx, hand, which, 'ring', 10);
       idx = this.updateFinger(idx, hand, which, 'pinky', 10);
       idx = this.updateFinger(idx, hand, which, 'thumb', 10);
-      idx = this.placeAlongSegment(idx, hand.fingerJoint(which, 'thumb', 1), hand.fingerJoint(which, 'index', 1), 20);
-      idx = this.placeAlongSegment(idx, hand.fingerJoint(which, 'thumb', 1), hand.fingerJoint(which, 'middle', 1), 20);
-      idx = this.placeAlongSegment(idx, hand.fingerJoint(which, 'thumb', 1), hand.fingerJoint(which, 'ring', 1), 20);
-      idx = this.placeAlongSegment(idx, hand.fingerJoint(which, 'thumb', 1), hand.fingerJoint(which, 'pinky', 1), 20);
+
+      var src = vec3.fromValues(0,-2,2);
+      idx = this.placeAlongSegment(idx, src, hand.fingerJoint(which, 'thumb', 1), 100);
+      //idx = this.placeAlongSegment(idx, src, hand.fingerJoint(which, 'middle', 1), 20);
+      //idx = this.placeAlongSegment(idx, src, hand.fingerJoint(which, 'ring', 1), 20);
+      //idx = this.placeAlongSegment(idx, src, hand.fingerJoint(which, 'pinky', 1), 20);
+      //idx = this.placeAlongSegment(idx, src, hand.fingerJoint(which, 'index', 1), 20);
+      idx = this.placeAlongSegment(idx, hand.fingerJoint(which, 'thumb', 1), hand.fingerJoint(which, 'index', 1), 10);
+      idx = this.placeAlongSegment(idx, hand.fingerJoint(which, 'thumb', 1), hand.fingerJoint(which, 'middle', 1), 10);
+      idx = this.placeAlongSegment(idx, hand.fingerJoint(which, 'thumb', 1), hand.fingerJoint(which, 'ring', 1), 10);
+      idx = this.placeAlongSegment(idx, hand.fingerJoint(which, 'thumb', 1), hand.fingerJoint(which, 'pinky', 1), 10);
       return idx;
    }
 

@@ -180,7 +180,7 @@ void checkSpheres(in vec3 ray_start, in vec3 ray_dir, out float t, out vec3 norm
   t = -1.0;
   if (leftTime < 0.0 && rightTime < 0.0) 
   {
-    return;
+    //return;
   }
 
   // Idea: check all intersecting spheres to collectd density (use larger radius than spheres)
@@ -194,7 +194,7 @@ void checkSpheres(in vec3 ray_start, in vec3 ray_dir, out float t, out vec3 norm
   for (float i = 0.0; i < 500.0; i+=1.0) // need to hardcode loop
   { 
     float startIndex = i * 3.0;
-    float radius = 0.1; // ASN TODO: why doesn't this work? pos_rad.w;
+    float radius = 0.05; // ASN TODO: why doesn't this work? pos_rad.w;
 
     vec3 center;
     getPosition(startIndex, center);
@@ -327,7 +327,7 @@ void main ()
     computeColor(point3, normalize(point3_dir), refraction_color); // second sphere intersection
     */
 
-    gl_FragColor = vec4(diffuse_color, 0.0) + specular_color + vec4(0.5 * relection.xyz, 1.0);
+    gl_FragColor = vec4(relection.xyz, 1.0);
     //gl_FragColor = vec4(abs(hit_sphere_normal), 1.0);
   }
 
