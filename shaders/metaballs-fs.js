@@ -105,7 +105,7 @@ void getPosition(float startIndex, out vec3 center)
 void blob(in vec3 p, in float[3] spheres, out float d, out vec3 normal, out vec4 color)
 {
   d = 0.0;
-  float a = 1.0;
+  float a = 0.005;
   float b = 5000.0;
   for (int i = 0; i < 3; i++) // need to hardcode loop
   { 
@@ -132,13 +132,13 @@ void blob(in vec3 p, in float[3] spheres, out float d, out vec3 normal, out vec4
 void metaballIntersection(in vec3 ray_start, in vec3 ray_dir, in float[3] spheres, out float t, out vec3 normal, out vec4 color)
 {
   t = -1.0;
-  for (float d = 0.0; d < 0.5; d += 0.05) { // everything is at z = -2.0; distance should be test radius * 2
+  for (float d = 0.0; d < 0.5; d += 0.01) { // everything is at z = -2.0; distance should be test radius * 2
     vec3 p = ray_start + d * ray_dir;
     float density = 0.0;
 
     blob(p, spheres, density, normal, color);
 
-    if (density > 0.0) {
+    if (density > 0.00001) {
        t = d;
        return;
     }
@@ -159,6 +159,7 @@ void sphereIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 center, in f
   }
 
   float intersection_dist = sqrt(radius * radius - len_dir_perpend * len_dir_perpend);
+  // for metaball intersection, don't push the point to the surface!
   if (sphere_len > radius) 
   {
     t = projection - intersection_dist;
@@ -191,6 +192,9 @@ void checkSpheres(in vec3 ray_start, in vec3 ray_dir, out float t, out vec3 norm
 
   int numFound = 0;
   float closest = 100.0;
+  color = vec4(1,1,1,1);
+  normal = vec3(0,0,0);
+  float density = 0.0;
   for (float i = 0.0; i < 500.0; i+=1.0) // need to hardcode loop
   { 
     float startIndex = i * 3.0;
@@ -201,25 +205,30 @@ void checkSpheres(in vec3 ray_start, in vec3 ray_dir, out float t, out vec3 norm
 
     float hitTime = -1.0;
     sphereIntersection(ray_start, ray_dir, center, radius, hitTime);
-    if (hitTime > 0.0 && hitTime < closest) 
+    if (hitTime > 0.0) 
     {
-       /*if (numFound == 0) spheres[0] = i;
-       else if (numFound == 1) spheres[1] = i;
-       else if (numFound == 2) spheres[2] = i;
-       numFound++;*/
-       closest = hitTime;
-       spheres[0] = i;
+      /*if (numFound == 0) spheres[0] = i;
+      else if (numFound == 1) spheres[1] = i;
+      else if (numFound == 2) spheres[2] = i;
+      numFound++;*/
+      vec3 p = ray_start + hitTime * ray_dir;
+      vec3 dir = center - p; // todo: updat eposition based on time
+      float r = length(dir);
+
+      float b = 1000.0;
+      float dd = density1(radius, b, r);
+      density += dd;
+
+      if (dd > 0.0)
+      {
+        normal += -2.0 * b * dd * dir;
+      }
+      if (hitTime < closest) closest = hitTime;
     } 
   }
 
-  if (closest < 100.0)
-  {
-    color = vec4(1,1,1,1);
-    normal = vec3(0,0,0);
-    vec3 start = ray_start + closest * ray_dir;
-    metaballIntersection(start, ray_dir, spheres, t, normal, color);
-    if (t > 0.0) t += closest;
-  }
+  normal = normalize(normal);
+  if (closest < 100.0) t = closest;
 }
 
 void refractionDirection(in float refraction_coef, in vec3 input_dir, in vec3 normal, out vec3 refraction_dir)
