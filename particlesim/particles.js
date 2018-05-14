@@ -15,6 +15,7 @@ var handTextureId = 1;
 var metaballThreshold = 0.1;
 var gl;
 var numHandData = 2 * (4*5 + 1); // 2 hands * ( 4 fingerJoints * 5 fingers + palmPos)
+//var recording = undefined; // uncomment out this line to enable live leap stream
 var recording = "https://raw.githubusercontent.com/alinen/shared-dreaming/hand-texture/leapMotion_1512680922000.json";
 var hand = new HandHelper(recording);
 
@@ -243,19 +244,25 @@ function drawScene()
 
 function tick()
 {
-   var newTime = new Date().getTime();
-   var dt = (newTime - lastTime)*0.001;
-   elapsedTime += dt * 4.0;
+  var newTime = new Date().getTime();
+  var dt = (newTime - lastTime)*0.001;
+  elapsedTime += dt * 4.0;
 
-   //hand.update(); // play recorded JSON
-   hand.update(framesJSONobj); // play realtime LeapMotion
-   system.update(dt, hand);
-   //system.update(dt);
+  if (recording === undefined)
+  {
+    hand.update(framesJSONobj); // play realtime LeapMotion
+  }
+  else
+  {
+    hand.update(); // play recorded JSON
+  }
+  system.update(dt, hand);
+  //system.update(dt);
 
-   requestAnimFrame(tick);
-   drawScene();
-   lastTime = newTime
-   framesJSONobj.frames.pop()
+  requestAnimFrame(tick);
+  drawScene();
+  lastTime = newTime
+  framesJSONobj.frames.pop()
 }
 
 function webGLStart()

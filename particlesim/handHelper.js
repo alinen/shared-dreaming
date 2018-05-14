@@ -21,7 +21,7 @@ class HandHelper
     } 
     else 
     {
-      this.frameData = myFrame;
+      this.frameData = framesJSONobj;
       this.frames = this.frameData.frames;
       this.center = this.frameData.center;
       this.boundingBox = this.frameData.boundingBox;
@@ -152,9 +152,11 @@ class HandHelper
     }
   }
 
-  update(framesJSONobj = null) {
+  update(framesJSONobj = undefined) {
     if (framesJSONobj && framesJSONobj.frames.length) {
       this.frameIndex = framesJSONobj.frames.length - 1
+      this.center = framesJSONobj.center;
+      this.boundingBox = framesJSONobj.boundingBox;
       this.parseRecordedData(framesJSONobj.frames)
     } else {
       this.parseRecordedData(this.frames)
