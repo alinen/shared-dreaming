@@ -31,7 +31,7 @@ void bboxIntersection(in vec3 ray_start, in vec3 ray_dir, out float t)
   vec3 box_normals[4];
   vec3 box_points[4];
 
-  box_normals[0] = vec3(0.0, -1.0, 0.0); // top
+  box_normals[0] = vec3(0.0, 1.0, 0.0); // bottom
   box_normals[1] = vec3(0.0, 0.0, -1.0); // back
   box_normals[2] = vec3(1.0, 0.0, 0.0); // left
   box_normals[3] = vec3(-1.0, 0.0, 0.0); // right
@@ -46,43 +46,20 @@ void bboxIntersection(in vec3 ray_start, in vec3 ray_dir, out float t)
   float min_t = 100.0;
   float tmpt = -1.0;
   vec3 isect;
+  float eps = 0.0001;
 
-  // back
-  /*
-  planeIntersection(ray_start, ray_dir, box_normals[1], box_points[1], tmpt);
-  isect = ray_start + tmpt * ray_dir; // ASN TODO: proper AABB test
-  if (isect.x > hands_min.x && isect.x < hands_max.x &&
-      isect.y > hands_min.y && isect.y < hands_max.y)
+  for (int i = 0; i < 4; i++)
   {
-    min_t = min(min_t, tmpt);
-  }
+    planeIntersection(ray_start, ray_dir, box_normals[i], box_points[i], tmpt);
 
-  // bottom
-  planeIntersection(ray_start, ray_dir, box_normals[0], box_points[0], tmpt);
-  isect = ray_start + tmpt * ray_dir; // ASN TODO: proper AABB test
-  if (isect.x > hands_min.x && isect.x < hands_max.x &&
-      isect.z > hands_min.z && isect.z < hands_max.z)
-  {
-    min_t = min(min_t, tmpt);
+    isect = ray_start + tmpt * ray_dir; // ASN TODO: proper AABB test
+    if (isect.x > hands_min.x-eps && isect.x < hands_max.x+eps &&
+        isect.y > hands_min.y-eps && isect.y < hands_max.y+eps &&
+        isect.z > hands_min.z-eps && isect.z < hands_max.z+eps )
+    {
+      min_t = min(min_t, tmpt);
+    }
   }
-*/
-  // left, right
-  planeIntersection(ray_start, ray_dir, box_normals[2], box_points[2], tmpt);
-  isect = ray_start + tmpt * ray_dir; // ASN TODO: proper AABB test
-  if (isect.x > hands_min.y && isect.y < hands_max.y &&
-      isect.z > hands_min.z && isect.z < hands_max.z)
-  {
-    min_t = min(min_t, tmpt);
-  }
-
-  planeIntersection(ray_start, ray_dir, box_normals[3], box_points[3], tmpt);
-  isect = ray_start + tmpt * ray_dir; // ASN TODO: proper AABB test
-  if (isect.x > hands_min.y && isect.y < hands_max.y &&
-      isect.z > hands_min.z && isect.z < hands_max.z)
-  {
-    min_t = min(min_t, tmpt);
-  }
-
   if (min_t < 100.0) t = min_t;
 }
 
@@ -216,6 +193,30 @@ void blobIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 center, in flo
   density = density * 2.0; // add the remaining influence
 }
 
+void sphereQuickReject(in vec3 ray_start, in vec3 ray_dir, out float t)
+{
+  t = -1.0;
+
+  // Idea: check all intersecting spheres to get density
+  // Color pixel based on density
+  //
+  float closest = 100.0;
+  float radius = 0.05*10.0; 
+  for (float i = 0.0; i < 500.0; i+=10.0) // need to hardcode loop
+  { 
+    vec3 center;
+    getPosition(i, center);
+
+    float hitTime = -1.0;
+    sphereIntersection(ray_start, ray_dir, center, radius, hitTime);
+    if (hitTime > 0.0) 
+    {
+      t = hitTime;
+      return;
+    } 
+  }
+}
+
 
 void checkSpheres(in vec3 ray_start, in vec3 ray_dir, out float t, out vec4 color)
 {
@@ -274,22 +275,22 @@ void main ()
   camera_pos = m2 * m * (camera_pos - sphere_center) + sphere_center;
 
   float t = -1.0;
-  bboxIntersection(camera_pos, normalized_view_dir, t);
+  sphereQuickReject(camera_pos, normalized_view_dir, t);
 
   vec4 hit_color;
+  // Test quick reject
+  /*
   if (t < 0.0)
   {
     hit_color = vec4(1,0,0,1);
-    //checkSpheres(camera_pos, normalized_view_dir, t, hit_color);
-  }
-  else
+  }*/
+  //gl_FragColor= hit_color;
+
+  if (t > 0.0)
   {
-    hit_color = vec4(1,1,0,1);
+    checkSpheres(camera_pos, normalized_view_dir, t, hit_color);
   }
-
-  gl_FragColor= hit_color;
-
-  /*
+ 
   vec4 color = vec4(1.0,0.0,0.0,1.0);
   computeColor(camera_pos, normalized_view_dir, color);
   if (t > 0.0) 
@@ -300,7 +301,6 @@ void main ()
   else
   {
     gl_FragColor = color;
-  }*/
-
+  }
 }
 `;

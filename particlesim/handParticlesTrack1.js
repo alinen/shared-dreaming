@@ -54,6 +54,14 @@ class HandParticlesTrack1
        this.sh.pos[2] = pos[2];
        //console.log(pos[0]+" "+pos[1]+" "+pos[2]);
        this.sh.toData(idx, this.data);
+
+       //this.min[0] = Math.min(this.min[0], pos[0]);
+       //this.min[1] = Math.min(this.min[1], pos[1]);
+       //this.min[2] = Math.min(this.min[2], pos[2]);
+          
+       //this.max[0] = Math.max(this.max[0], pos[0]);
+       //this.max[1] = Math.max(this.max[1], pos[1]);
+       //this.max[2] = Math.max(this.max[2], pos[2]);
    }
 
    placeAlongSegment(idx, start, end, num)
@@ -68,13 +76,6 @@ class HandParticlesTrack1
           vec3.add(pos, pos, dir); 
           this.writePosition(idx++, pos); 
 
-          this.min[0] = Math.min(this.min[0], pos[0]);
-          this.min[1] = Math.min(this.min[1], pos[1]);
-          this.min[2] = Math.min(this.min[2], pos[2]);
-          
-          this.max[0] = Math.max(this.max[0], pos[0]);
-          this.max[1] = Math.max(this.max[1], pos[1]);
-          this.max[2] = Math.max(this.max[2], pos[2]);
       }
       return idx;
    }
@@ -117,16 +118,16 @@ class HandParticlesTrack1
 
       if (!this.paused && this.initialized && hand.getCurrentFrame())
       {
-          this.min[0] = this.min[1] = this.min[2] = 99.0;
-          this.max[0] = this.max[1] = this.max[2] = -99.0;
+          //this.min[0] = this.min[1] = this.min[2] = 99.0;
+          //this.max[0] = this.max[1] = this.max[2] = -99.0;
 
           var idx = 0;
           idx = this.updateHand(idx, hand, 'left');
           idx = this.updateHand(idx, hand, 'right');
           if (idx > this.maxNumSpheres) console.log("WARNING: "+idx+" > "+this.maxNumSpheres);
 
-          console.log(this.min);
-          console.log(this.max);
+          //console.log(this.min);
+          //console.log(this.max);
        }
    }
 };
