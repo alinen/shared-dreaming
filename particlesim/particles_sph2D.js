@@ -10,89 +10,90 @@ var gl;
 
 function initGL(canvas)
 {
-   try
-   {
-      gl = canvas.getContext("experimental-webgl");
-      gl.viewportWidth = canvas.width;
-      gl.viewportHeight = canvas.height;
-      gl.getExtension('OES_texture_float');
-   }
-   catch (e)
+  try
   {
-   }
-   if (!gl)
-   {
-      alert("No WebGL for you");
-   }
+    gl = canvas.getContext("experimental-webgl");
+    gl.viewportWidth = canvas.width;
+    gl.viewportHeight = canvas.height;
+    gl.getExtension('OES_texture_float');
+  }
+  catch (e)
+  {
+    console.log("initGL error:", e);
+  }
+  if (!gl)
+  {
+    alert("No WebGL for you");
+  }
 }
 
 function getShader(gl, src, type)
 {
-   var shader = gl.createShader(type);
-   gl.shaderSource(shader, src);
-   gl.compileShader(shader);
+  var shader = gl.createShader(type);
+  gl.shaderSource(shader, src);
+  gl.compileShader(shader);
 
-   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
-   {
-      alert(gl.getShaderInfoLog(shader));
-      return null;
-   }
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+  {
+    alert(gl.getShaderInfoLog(shader));
+    return null;
+  }
 
-   return shader;
+  return shader;
 }
 
 function initShader(fragmentShader, vertexShader)
 {
-   var sp = gl.createProgram();
-   gl.attachShader(sp, vertexShader);
-   gl.attachShader(sp, fragmentShader);
-   gl.linkProgram(sp);
+  var sp = gl.createProgram();
+  gl.attachShader(sp, vertexShader);
+  gl.attachShader(sp, fragmentShader);
+  gl.linkProgram(sp);
 
-   if (!gl.getProgramParameter(sp, gl.LINK_STATUS))
-   {
-      alert("Could not initialise shaders");
-   }
+  if (!gl.getProgramParameter(sp, gl.LINK_STATUS))
+  {
+    alert("Could not initialise shaders");
+  }
 
-   sp.vertexPositionAttribute = gl.getAttribLocation(sp, "pos");
-   gl.enableVertexAttribArray(sp.vertexPositionAttribute);
+  sp.vertexPositionAttribute = gl.getAttribLocation(sp, "pos");
+  gl.enableVertexAttribArray(sp.vertexPositionAttribute);
 
-   return sp;
+  return sp;
 }
 
 function initShaders()
 {
-   var fragmentBackground = getShader(gl, fragmentProgram, gl.FRAGMENT_SHADER);
-   var vertexShader = getShader(gl, vertexProgram, gl.VERTEX_SHADER);
-   shaderProgram = initShader(fragmentBackground, vertexShader);
+  var fragmentBackground = getShader(gl, fragmentProgram, gl.FRAGMENT_SHADER);
+  var vertexShader = getShader(gl, vertexProgram, gl.VERTEX_SHADER);
+  shaderProgram = initShader(fragmentBackground, vertexShader);
 }
 
 function initTexture()
 {
-   var num_of_floats = system.maxNumSpheres * 3 * 4;
+  var num_of_floats = system.maxNumSpheres * 3 * 4;
 
-   //system.setupSpheres(); // asn can I remove and call from ctor?
+  //system.setupSpheres(); // asn can I remove and call from ctor?
 
-   textureId = gl.createTexture();
-   gl.bindTexture(gl.TEXTURE_2D, textureId);
-   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  textureId = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, textureId);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-   textureSize = system.maxNumSpheres * 3;
+  textureSize = system.maxNumSpheres * 3;
 
-   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, textureSize, 1, 0, gl.RGBA, gl.FLOAT, system.data);
-   gl.bindTexture(gl.TEXTURE_2D, null);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, textureSize, 1, 0, gl.RGBA, gl.FLOAT, system.data);
+  gl.bindTexture(gl.TEXTURE_2D, null);
 }
 
 function createGlBuffer(values, itemSize, numItems, type)
 {
-   var buffer = gl.createBuffer();
-   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-   gl.bufferData(gl.ARRAY_BUFFER, values, type);
-   buffer.itemSize = itemSize;
-   buffer.numItems = numItems;
-   return buffer;
+  var buffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  gl.bufferData(gl.ARRAY_BUFFER, values, type);
+  buffer.itemSize = itemSize;
+  buffer.numItems = numItems;
+  return buffer;
 }
 
 function getSquareVertices (vertices)
@@ -143,76 +144,76 @@ function getSquareVertices (vertices)
 
 function initBuffers()
 {
-   var vertices = [];
-   getSquareVertices(vertices);
-   mat4.ortho(pMatrix, -1.0, 1.0, -1.0, 1.0, -1.0, 10.0);
+  var vertices = [];
+  getSquareVertices(vertices);
+  mat4.ortho(pMatrix, -1.0, 1.0, -1.0, 1.0, -1.0, 10.0);
 
-   var flatVerticesBuffer = [];
-   for (var i = 0; i < vertices.length; i+=3) {
-      x = vertices[i+0]
-      y = vertices[i+1]
-      z = vertices[i+2]
-      var tmpVec4 = vec4.create()
-      vec4.set(tmpVec4, x, y, z, 1)
+  var flatVerticesBuffer = [];
+  for (var i = 0; i < vertices.length; i+=3) {
+    x = vertices[i+0]
+    y = vertices[i+1]
+    z = vertices[i+2]
+    var tmpVec4 = vec4.create()
+    vec4.set(tmpVec4, x, y, z, 1)
 
-      vec4.transformMat4(tmpVec4, tmpVec4, pMatrix)
-      flatVerticesBuffer.push(tmpVec4[0], tmpVec4[1], tmpVec4[2]);
-   }
+    vec4.transformMat4(tmpVec4, tmpVec4, pMatrix)
+    flatVerticesBuffer.push(tmpVec4[0], tmpVec4[1], tmpVec4[2]);
+  }
 
-   squareVertexPositionBuffer = createGlBuffer(new Float32Array(flatVerticesBuffer), 3, 4, gl.STATIC_DRAW);
+  squareVertexPositionBuffer = createGlBuffer(new Float32Array(flatVerticesBuffer), 3, 4, gl.STATIC_DRAW);
 }
 
 function drawScene()
 {
-   gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-   gl.useProgram(shaderProgram);
-   gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
-   gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+  gl.useProgram(shaderProgram);
+  gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
+  gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-   var uelapsedTime = gl.getUniformLocation(shaderProgram, "elapsedTime");
-   gl.uniform1f(uelapsedTime, elapsedTime);
+  var uelapsedTime = gl.getUniformLocation(shaderProgram, "elapsedTime");
+  gl.uniform1f(uelapsedTime, elapsedTime);
 
-   var uTextureSize = gl.getUniformLocation(shaderProgram, "size_of_texture");
-   gl.uniform1f(uTextureSize, textureSize);
+  var uTextureSize = gl.getUniformLocation(shaderProgram, "size_of_texture");
+  gl.uniform1f(uTextureSize, textureSize);
 
-   var uNumSpheres = gl.getUniformLocation(shaderProgram, "num_of_spheres");
-   gl.uniform1f(uNumSpheres, system.numSpheres);
+  var uNumSpheres = gl.getUniformLocation(shaderProgram, "num_of_spheres");
+  gl.uniform1f(uNumSpheres, system.numSpheres);
 
-   gl.activeTexture(gl.TEXTURE0);
-   gl.bindTexture(gl.TEXTURE_2D, textureId);
-   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, textureSize, 1, 0, gl.RGBA, gl.FLOAT, system.data);
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, textureId);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, textureSize, 1, 0, gl.RGBA, gl.FLOAT, system.data);
 
-   var uSphereInfo = gl.getUniformLocation(shaderProgram, "sphere_info");
-   gl.uniform1i(uSphereInfo, 0);
+  var uSphereInfo = gl.getUniformLocation(shaderProgram, "sphere_info");
+  gl.uniform1i(uSphereInfo, 0);
 
-   gl.drawArrays(gl.TRIANGLE_FAN, 0, squareVertexPositionBuffer.numItems);
+  gl.drawArrays(gl.TRIANGLE_FAN, 0, squareVertexPositionBuffer.numItems);
 }
 
 function tick()
 {
-   var newTime = new Date().getTime();
-   var dt = (newTime - lastTime)*0.001;
-   elapsedTime += dt * 4.0;
+  var newTime = new Date().getTime();
+  var dt = (newTime - lastTime)*0.001;
+  elapsedTime += dt * 4.0;
 
-   system.update(dt);
-   requestAnimFrame(tick);
-   drawScene();
-   lastTime = newTime
+  system.update(dt);
+  requestAnimFrame(tick);
+  drawScene();
+  lastTime = newTime
 }
 
 function webGLStart()
 {
-   var canvas = document.getElementById("canvas");
-   initGL(canvas);
-   initShaders();
-   initBuffers();
-   initTexture();
+  var canvas = document.getElementById("canvas");
+  initGL(canvas);
+  initShaders();
+  initBuffers();
+  initTexture();
 
-   lastTime =  new Date().getTime();
-   gl.clearColor(0.1, 0.1, 0.1, 1.0);
-   tick();
+  lastTime =  new Date().getTime();
+  gl.clearColor(0.1, 0.1, 0.1, 1.0);
+  tick();
 }
 
 

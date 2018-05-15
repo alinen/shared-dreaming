@@ -136,40 +136,6 @@ void blob(in vec3 p, out float d, out vec3 normal, out vec4 color)
   normal = normalize(normal);
 }
 
-void blobChroma(in vec3 p, out float d, out vec3 normal, out vec4 color)
-{
-  d = 0.0;
-  color = vec4(0.1,0.1,0.1,1);
-
-  float a = 1.0;
-  float b = 0.5 * 100.0;
-  for (float i = 0.0; i < 500.0; i+=10.0) { // need to hardcode loop
-    float startIndex = i * 3.0;
-
-    float tex_coord_1 = (startIndex + 0.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
-    float tex_coord_y = 0.5;
-
-    vec4 pos_rad = texture2D(sphere_info, vec2(tex_coord_1, tex_coord_y));
-
-    vec3 dir = pos_rad.xyz - p;
-    float r = length(dir);
-
-    float dd = density1(a, b, r);
-    d += dd;
-    // color.r += 0.001;
-    // color.g += 0.001;
-    // color.b += d;
-
-    if (dd > 0.0)
-    {
-      normal += -2.0 * b * d * dir;
-    }
-  }
-
-  normal = normalize(normal);
-}
-
-
 void simple(in vec3 p, out float d, out vec3 normal, out vec4 color)
 {
   float a = 1.0;
@@ -205,8 +171,6 @@ void sphereIntersection(in vec3 ray_start, in vec3 ray_dir, out float t, out vec
     float distance = 0.0;
 
     blob(p, distance, normal, color);
-    // blobChroma(p + vec3(0.01, 0.0, 0.0), distance, normal, color);
-    // blobChroma(ray_start, distance, normal, color);
     if (distance > 0.01) {
        t = d;
        return;
@@ -296,32 +260,30 @@ void main ()
     vec4 relection;
     computeColor(point1, relection_ray, relection);
 
-    // refraction
-    /*
-    float refraction_coef = 0.155;
-    float Epsilon = 0.001;
-    vec3 point2 = point1 + Epsilon * normalized_view_dir;
-    vec3 normal_at_point2 = normalize(point1 - sphere_center);
+    // // refraction
+    // float refraction_coef = 0.155;
+    // float Epsilon = 0.001;
+    // vec3 point2 = point1 + Epsilon * normalized_view_dir;
+    // vec3 normal_at_point2 = normalize(point1 - sphere_center);
 
-    vec3 point2_dir;
-    refractionDirection(refraction_coef, normalized_view_dir, normal_at_point2, point2_dir); // first refraction
+    // vec3 point2_dir;
+    // refractionDirection(refraction_coef, normalized_view_dir, normal_at_point2, point2_dir); // first refraction
 
-    float exit_t;
-    sphereIntersection(point2, normalize(point2_dir), sphere_center, radius, theta, exit_t); // first sphere intersection
+    // float exit_t;
+    // sphereIntersection(point2, normalize(point2_dir), sphere_center, radius, theta, exit_t); // first sphere intersection
 
-    vec3 point3 = point2 + exit_t * point2_dir;
-    vec3 normalized_point2_dir = normalize(point2_dir);
-    vec3 normal_at_point3 = normalize(point3 - sphere_center);
+    // vec3 point3 = point2 + exit_t * point2_dir;
+    // vec3 normalized_point2_dir = normalize(point2_dir);
+    // vec3 normal_at_point3 = normalize(point3 - sphere_center);
 
-    vec3 point3_dir;
-    refractionDirection( (1.0 / refraction_coef), normalized_point2_dir, normal_at_point3, point3_dir); // second refraction
+    // vec3 point3_dir;
+    // refractionDirection( (1.0 / refraction_coef), normalized_point2_dir, normal_at_point3, point3_dir); // second refraction
 
-    vec4 refraction_color;
-    computeColor(point3, normalize(point3_dir), refraction_color); // second sphere intersection
-    */
+    // vec4 refraction_color;
+    // computeColor(point3, normalize(point3_dir), refraction_color); // second sphere intersection
 
-    gl_FragColor = vec4(diffuse_color, 0.0) + specular_color + vec4(0.5 * relection.xyz, 1.0);
-    gl_FragColor = vec4(abs(hit_sphere_normal), 1.0);
+    // gl_FragColor = vec4(diffuse_color, 0.0) + specular_color + vec4(0.5 * relection.xyz, 1.0);
+    // gl_FragColor = vec4(abs(hit_sphere_normal), 1.0);
     gl_FragColor = vec4(hit_sphere_rgb);
   }
 
