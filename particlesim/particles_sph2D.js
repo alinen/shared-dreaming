@@ -6,7 +6,9 @@ var elapsedTime = 0;
 var lastTime = 0;
 var numSpheres = 50;
 var textureId = 0;
+var play = true;
 var gl;
+
 
 function initGL(canvas)
 {
@@ -193,14 +195,32 @@ function drawScene()
 
 function tick()
 {
-  var newTime = new Date().getTime();
-  var dt = (newTime - lastTime)*0.001;
-  elapsedTime += dt * 4.0;
+  if (play)
+  {
+    var newTime = new Date().getTime();
+    var dt = (newTime - lastTime)*0.001;
+    elapsedTime += dt * 4.0;
 
-  system.update(dt);
+    system.update(dt);
+  }
   requestAnimFrame(tick);
-  drawScene();
-  lastTime = newTime
+  if (play)
+  {
+    drawScene();
+    lastTime = newTime
+  }
+}
+
+function togglePlay()
+{
+  if (play)
+  {
+    play = false;
+  }
+  else
+  {
+    play = true;
+  }
 }
 
 function webGLStart()
@@ -215,5 +235,3 @@ function webGLStart()
   gl.clearColor(0.1, 0.1, 0.1, 1.0);
   tick();
 }
-
-
