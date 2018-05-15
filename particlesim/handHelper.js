@@ -29,38 +29,26 @@ class HandHelper
   }
 
   init() {
-    this.data = new Float32Array(numHandData * 2 * 4);
+    this.data = new Float32Array(numHandData * 4);
     for (var i = 0; i < this.data.length; i++) this.data[i] = 0.0;
   }
 
   fromData(idx) {
-    var i = idx * 2 * 4;
+    var i = idx * 4;
 
     this.pos[0] = this.data[i + 0];
     this.pos[1] = this.data[i + 1];
     this.pos[2] = this.data[i + 2];
-
-    this.radius = this.data[i + 3];
-
-    this.rgba[0] = this.data[i + 4];
-    this.rgba[1] = this.data[i + 5];
-    this.rgba[2] = this.data[i + 6];
-    this.rgba[3] = this.data[i + 7];
+    // not used this.radius = this.data[i + 3];
   }
 
   toData(idx, data, pos, rgba, radius) {
-    var i = idx * 2 * 4;
+    var i = idx * 4;
 
     data[i + 0] = pos[0]
     data[i + 1] = pos[1]
     data[i + 2] = pos[2]
-
-    data[i + 3] = radius;
-
-    data[i + 4] = rgba[0];
-    data[i + 5] = rgba[1];
-    data[i + 6] = rgba[2];
-    data[i + 7] = rgba[3];
+    // data[i + 3] = radius;
   }
 
   normalizeValues(positionValues) {

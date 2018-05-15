@@ -88,7 +88,7 @@ function initTexture()
    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-   textureSize = system.maxNumSpheres * 3;
+   textureSize = system.maxNumSpheres;
 
    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, textureSize, 1, 0, gl.RGBA, gl.FLOAT, system.data);
    gl.bindTexture(gl.TEXTURE_2D, null);
@@ -105,7 +105,7 @@ function initHandTexture()
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-  handTextureSize = numHandData * 2;
+  handTextureSize = numHandData;
 
    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, handTextureSize, 1, 0, gl.RGBA, gl.FLOAT, hand.data);
    gl.bindTexture(gl.TEXTURE_2D, null);
@@ -213,17 +213,11 @@ function drawScene()
    var uNumSpheres = gl.getUniformLocation(shaderProgram, "num_of_spheres");
    gl.uniform1f(uNumSpheres, system.numSpheres);
 
-   var uleftbscenter = gl.getUniformLocation(shaderProgram, "left_bs_center");
-   gl.uniform3f(uleftbscenter, system.leftBsCenter[0], system.leftBsCenter[1], system.leftBsCenter[2]);
+   var umin = gl.getUniformLocation(shaderProgram, "hands_min");
+   gl.uniform3f(umin, system.min[0], system.min[1], system.min[2]);
 
-   var urightbscenter = gl.getUniformLocation(shaderProgram, "right_bs_center");
-   gl.uniform3f(urightbscenter, system.rightBsCenter[0], system.rightBsCenter[1], system.rightBsCenter[2]);
-
-   var uleftbsradius = gl.getUniformLocation(shaderProgram, "left_bs_radius");
-   gl.uniform1f(uleftbsradius, system.leftBsRadius);
-
-   var urightbsradius = gl.getUniformLocation(shaderProgram, "right_bs_radius");
-   gl.uniform1f(urightbsradius, system.rightBsRadius);
+   var umax = gl.getUniformLocation(shaderProgram, "hands_max");
+   gl.uniform3f(umax, system.max[0], system.max[1], system.max[2]);
 
    gl.activeTexture(gl.TEXTURE0);
    gl.bindTexture(gl.TEXTURE_2D, textureId);

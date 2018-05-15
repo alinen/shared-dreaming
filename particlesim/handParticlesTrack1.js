@@ -9,10 +9,8 @@ class HandParticlesTrack1
       this.maxNumSpheres = maxNumParticles;
       this.data = null; //positions,vels,rgbs needs to go in data to get rendered;
       this.sh = new SphereHelper();
-      this.leftBsCenter = new Float32Array(3);
-      this.leftBsRadius = 0.0;
-      this.rightBsCenter = new Float32Array(3);
-      this.rightBsRadius = 0.0;
+      this.min = new Float32Array(3);
+      this.max = new Float32Array(3);
 
       this.setupSpheres();
       this.initialized = false;
@@ -23,7 +21,7 @@ class HandParticlesTrack1
       this.data = new Float32Array(this.maxNumSpheres * 3 * 4)
       for (var i = 0; i < this.data.length; i++)
       {
-         this.data[i] = -20.0;
+         this.data[i] = 20.0;
       }
    }
 
@@ -38,9 +36,9 @@ class HandParticlesTrack1
          this.sh.pos[0] = -2.0 + this.params.r+cellj*margin;
          this.sh.pos[1] = this.params.r-celli*margin+1;
          this.sh.pos[2] = -2.0;
-         this.sh.rgb[0] = 1.0;
-         this.sh.rgb[1] = 0.0;
-         this.sh.rgb[2] = 0.0;
+         //this.sh.rgb[0] = 1.0; // not used
+         //this.sh.rgb[1] = 0.0;
+         //this.sh.rgb[2] = 0.0;
          this.sh.toData(i, this.data);
       }
       
@@ -69,6 +67,14 @@ class HandParticlesTrack1
           vec3.scale(dir, dir, alpha);
           vec3.add(pos, pos, dir); 
           this.writePosition(idx++, pos); 
+
+          this.min[0] = Math.min(this.min[0], pos[0]);
+          this.min[1] = Math.min(this.min[1], pos[1]);
+          this.min[2] = Math.min(this.min[2], pos[2]);
+          
+          this.max[0] = Math.max(this.max[0], pos[0]);
+          this.max[1] = Math.max(this.max[1], pos[1]);
+          this.max[2] = Math.max(this.max[2], pos[2]);
       }
       return idx;
    }
@@ -102,27 +108,6 @@ class HandParticlesTrack1
       return idx;
    }
 
-   updateBoundingSphere(hand, which)
-   {
-       var pos = hand.fingerJoint(which, 'middle', 1);
-       var radius = 0.75;
-       if (pos[2] > -0.001)
-       {
-         radius = 0.0;
-       }
-
-       if (which == 'left')
-       {
-         this.leftBsCenter = pos;
-         this.leftBsRadius = radius;
-       }
-       else
-       {
-         this.rightBsCenter = pos;
-         this.rightBsRadius = radius;
-       }
-   }
-
    update(dt, hand)  // ASN TODO: Fixed framerate or application framerate?
    {
       if (!this.initialized)
@@ -132,13 +117,16 @@ class HandParticlesTrack1
 
       if (!this.paused && this.initialized && hand.getCurrentFrame())
       {
+          this.min[0] = this.min[1] = this.min[2] = 99.0;
+          this.max[0] = this.max[1] = this.max[2] = -99.0;
+
           var idx = 0;
           idx = this.updateHand(idx, hand, 'left');
           idx = this.updateHand(idx, hand, 'right');
           if (idx > this.maxNumSpheres) console.log("WARNING: "+idx+" > "+this.maxNumSpheres);
 
-          this.updateBoundingSphere(hand, 'left');
-          this.updateBoundingSphere(hand, 'right');
+          console.log(this.min);
+          console.log(this.max);
        }
    }
 };

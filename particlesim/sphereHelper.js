@@ -11,40 +11,22 @@ class SphereHelper
    // ASN: maybe avoid this copying
    fromData(idx, data)
    {
-     var i = idx * 3 * 4;
+     var i = idx * 4;
      this.pos[0] = data[i + 0];
      this.pos[1] = data[i + 1];
      this.pos[2] = data[i + 2];
      this.radius = data[i + 3];
-
-     this.vel[0] = data[i + 4];
-     this.vel[1] = data[i + 5];
-     this.vel[2] = data[i + 6];
-
-     this.rgb[0] = data[i + 8];
-     this.rgb[1] = data[i + 9];
-     this.rgb[2] = data[i + 10];
    }
 
    toData(sphereIndex, data)
    {
-     var i = sphereIndex * 3 * 4;
+     var i = sphereIndex * 4;
 
      // pos
      data[i + 0] = this.pos[0]; // x
      data[i + 1] = this.pos[1]; // y
      data[i + 2] = this.pos[2]; // z
      data[i + 3] = this.radius; // radius
-     // velocity
-     data[i + 4] = this.vel[0]; // v x
-     data[i + 5] = this.vel[1]; // v y
-     data[i + 6] = this.vel[2]; // v z
-     data[i + 7] = 0.0; // free for now
-     // color
-     data[i + 8] = this.rgb[0]; // r
-     data[i + 9] = this.rgb[1]; // g
-     data[i + 10] = this.rgb[2]; // b
-     data[i + 11] = 1.0; // free for now      
    }
 
    update(idx, dt, data, hand)

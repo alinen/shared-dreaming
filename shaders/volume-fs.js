@@ -10,10 +10,8 @@ uniform sampler2D sphere_info; // width = num_of_spheres * 3 * 4; height = 1
 uniform float num_of_spheres;
 uniform float size_of_texture;
 uniform float threshold;
-uniform vec3 left_bs_center;
-uniform float left_bs_radius;
-uniform vec3 right_bs_center;
-uniform float right_bs_radius;
+uniform vec3 hands_min;
+uniform vec3 hands_max;
 
 void planeIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 box_normal, in vec3 box_p1,
   out float plane_intersect)
@@ -26,6 +24,67 @@ void planeIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 box_normal, i
 
     plane_intersect = t;
   }
+
+void bboxIntersection(in vec3 ray_start, in vec3 ray_dir, out float t)
+{
+  t = -1.0;
+  vec3 box_normals[4];
+  vec3 box_points[4];
+
+  box_normals[0] = vec3(0.0, -1.0, 0.0); // top
+  box_normals[1] = vec3(0.0, 0.0, -1.0); // back
+  box_normals[2] = vec3(1.0, 0.0, 0.0); // left
+  box_normals[3] = vec3(-1.0, 0.0, 0.0); // right
+  //box_normals[4] = vec3(0.0, 1.0, 0.0); // bottom
+
+  box_points[0] = vec3(0.0, hands_min.y, 0.0); // bottom
+  box_points[1] = vec3(0.0, 0.0, hands_min.z); // back
+  box_points[2] = vec3(hands_max.x, 0.0, 0.0); // left
+  box_points[3] = vec3(hands_min.x, 0.0, 0.0); // right
+  //box_points[4] = hands_min; // bottom
+
+  float min_t = 100.0;
+  float tmpt = -1.0;
+  vec3 isect;
+
+  // back
+  /*
+  planeIntersection(ray_start, ray_dir, box_normals[1], box_points[1], tmpt);
+  isect = ray_start + tmpt * ray_dir; // ASN TODO: proper AABB test
+  if (isect.x > hands_min.x && isect.x < hands_max.x &&
+      isect.y > hands_min.y && isect.y < hands_max.y)
+  {
+    min_t = min(min_t, tmpt);
+  }
+
+  // bottom
+  planeIntersection(ray_start, ray_dir, box_normals[0], box_points[0], tmpt);
+  isect = ray_start + tmpt * ray_dir; // ASN TODO: proper AABB test
+  if (isect.x > hands_min.x && isect.x < hands_max.x &&
+      isect.z > hands_min.z && isect.z < hands_max.z)
+  {
+    min_t = min(min_t, tmpt);
+  }
+*/
+  // left, right
+  planeIntersection(ray_start, ray_dir, box_normals[2], box_points[2], tmpt);
+  isect = ray_start + tmpt * ray_dir; // ASN TODO: proper AABB test
+  if (isect.x > hands_min.y && isect.y < hands_max.y &&
+      isect.z > hands_min.z && isect.z < hands_max.z)
+  {
+    min_t = min(min_t, tmpt);
+  }
+
+  planeIntersection(ray_start, ray_dir, box_normals[3], box_points[3], tmpt);
+  isect = ray_start + tmpt * ray_dir; // ASN TODO: proper AABB test
+  if (isect.x > hands_min.y && isect.y < hands_max.y &&
+      isect.z > hands_min.z && isect.z < hands_max.z)
+  {
+    min_t = min(min_t, tmpt);
+  }
+
+  if (min_t < 100.0) t = min_t;
+}
 
 void boxIntersection(in vec3 ray_start, in vec3 ray_dir, out vec3 intersection_point, out float min_t)
 {
@@ -75,30 +134,17 @@ float density1(float a, float b, float rSqr)
   return a * exp(-b * rSqr);
 }
 
-void getVel(float startIndex, out vec4 vel)
-{
-  float tex_coord_2 = (startIndex + 1.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
-  float tex_coord_y = 0.5;
-  vel = texture2D(sphere_info, vec2(tex_coord_2, tex_coord_y));
-}
-
-void getColor(float startIndex, out vec4 color)
-{
-  float tex_coord_3 = (startIndex + 2.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
-  float tex_coord_y = 0.5;
-  color = texture2D(sphere_info, vec2(tex_coord_3, tex_coord_y));
-}
-
 void getPosition(float startIndex, out vec3 center)
 {
   float tex_coord_1 = (startIndex + 0.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
   float tex_coord_y = 0.5;
 
+  float t = startIndex * 3.0;
   vec4 pos_rad = texture2D(sphere_info, vec2(tex_coord_1, tex_coord_y));
   float R = 0.05;
-  float r = sin(elapsedTime+startIndex*2.0)+1.1;
-  float x = r*R*cos(elapsedTime+startIndex); 
-  float y = r*R*sin(elapsedTime+startIndex); 
+  float r = sin(elapsedTime+t*2.0)+1.1;
+  float x = r*R*cos(elapsedTime+t); 
+  float y = r*R*sin(elapsedTime+t); 
   center = pos_rad.xyz + vec3(x,y,y); 
 }
 
@@ -182,11 +228,10 @@ void checkSpheres(in vec3 ray_start, in vec3 ray_dir, out float t, out vec4 colo
   float density = 0.0;
   for (float i = 0.0; i < 500.0; i+=1.0) // need to hardcode loop
   { 
-    float startIndex = i * 3.0;
     float radius = 0.05; // ASN TODO: why doesn't this work? pos_rad.w;
 
     vec3 center;
-    getPosition(startIndex, center);
+    getPosition(i, center);
 
     float hitTime = -1.0;
     float hitDensity = 0.0;
@@ -229,9 +274,22 @@ void main ()
   camera_pos = m2 * m * (camera_pos - sphere_center) + sphere_center;
 
   float t = -1.0;
-  vec4 hit_color;
-  checkSpheres(camera_pos, normalized_view_dir, t, hit_color);
+  bboxIntersection(camera_pos, normalized_view_dir, t);
 
+  vec4 hit_color;
+  if (t < 0.0)
+  {
+    hit_color = vec4(1,0,0,1);
+    //checkSpheres(camera_pos, normalized_view_dir, t, hit_color);
+  }
+  else
+  {
+    hit_color = vec4(1,1,0,1);
+  }
+
+  gl_FragColor= hit_color;
+
+  /*
   vec4 color = vec4(1.0,0.0,0.0,1.0);
   computeColor(camera_pos, normalized_view_dir, color);
   if (t > 0.0) 
@@ -242,7 +300,7 @@ void main ()
   else
   {
     gl_FragColor = color;
-  }
+  }*/
 
 }
 `;
