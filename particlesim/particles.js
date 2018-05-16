@@ -190,56 +190,56 @@ function initBuffers()
 
 function drawScene()
 {
-   gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-   gl.useProgram(shaderProgram);
-   gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
-   gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+  gl.useProgram(shaderProgram);
+  gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
+  gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-   var uelapsedTime = gl.getUniformLocation(shaderProgram, "elapsedTime");
-   gl.uniform1f(uelapsedTime, elapsedTime);
+  var uelapsedTime = gl.getUniformLocation(shaderProgram, "elapsedTime");
+  gl.uniform1f(uelapsedTime, elapsedTime);
 
-   var uthreshold = gl.getUniformLocation(shaderProgram, "threshold");
-   var threshold = 0.01; // ASN MOD 0.85 * (Math.max(0.1, Math.sin(elapsedTime)));
-   gl.uniform1f(uthreshold, threshold);
+  var uthreshold = gl.getUniformLocation(shaderProgram, "threshold");
+  var threshold = 0.85 * (Math.max(0.1, Math.sin(elapsedTime)));
+  gl.uniform1f(uthreshold, threshold);
 
-   var uTextureSize = gl.getUniformLocation(shaderProgram, "size_of_texture");
-   gl.uniform1f(uTextureSize, textureSize);
+  var uTextureSize = gl.getUniformLocation(shaderProgram, "size_of_texture");
+  gl.uniform1f(uTextureSize, textureSize);
 
-   var uHandTextureSize = gl.getUniformLocation(shaderProgram, "size_of_hand_texture");
-   gl.uniform1f(uHandTextureSize, handTextureSize);
+  var uHandTextureSize = gl.getUniformLocation(shaderProgram, "size_of_hand_texture");
+  gl.uniform1f(uHandTextureSize, handTextureSize);
 
-   var uNumSpheres = gl.getUniformLocation(shaderProgram, "num_of_spheres");
-   gl.uniform1f(uNumSpheres, system.numSpheres);
+  var uNumSpheres = gl.getUniformLocation(shaderProgram, "num_of_spheres");
+  gl.uniform1f(uNumSpheres, system.numSpheres);
 
-   var uleftbscenter = gl.getUniformLocation(shaderProgram, "left_bs_center");
-   gl.uniform3f(uleftbscenter, system.leftBsCenter[0], system.leftBsCenter[1], system.leftBsCenter[2]);
+  var uleftbscenter = gl.getUniformLocation(shaderProgram, "left_bs_center");
+  gl.uniform3f(uleftbscenter, system.leftBsCenter[0], system.leftBsCenter[1], system.leftBsCenter[2]);
 
-   var urightbscenter = gl.getUniformLocation(shaderProgram, "right_bs_center");
-   gl.uniform3f(urightbscenter, system.rightBsCenter[0], system.rightBsCenter[1], system.rightBsCenter[2]);
+  var urightbscenter = gl.getUniformLocation(shaderProgram, "right_bs_center");
+  gl.uniform3f(urightbscenter, system.rightBsCenter[0], system.rightBsCenter[1], system.rightBsCenter[2]);
 
-   var uleftbsradius = gl.getUniformLocation(shaderProgram, "left_bs_radius");
-   gl.uniform1f(uleftbsradius, system.leftBsRadius);
+  var uleftbsradius = gl.getUniformLocation(shaderProgram, "left_bs_radius");
+  gl.uniform1f(uleftbsradius, system.leftBsRadius);
 
-   var urightbsradius = gl.getUniformLocation(shaderProgram, "right_bs_radius");
-   gl.uniform1f(urightbsradius, system.rightBsRadius);
+  var urightbsradius = gl.getUniformLocation(shaderProgram, "right_bs_radius");
+  gl.uniform1f(urightbsradius, system.rightBsRadius);
 
-   gl.activeTexture(gl.TEXTURE0);
-   gl.bindTexture(gl.TEXTURE_2D, textureId);
-   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, textureSize, 1, 0, gl.RGBA, gl.FLOAT, system.data);
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, textureId);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, textureSize, 1, 0, gl.RGBA, gl.FLOAT, system.data);
 
-    gl.activeTexture(gl.TEXTURE1);
-    gl.bindTexture(gl.TEXTURE_2D, handTextureId);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, handTextureSize, 1, 0, gl.RGBA, gl.FLOAT, hand.data);
+  gl.activeTexture(gl.TEXTURE1);
+  gl.bindTexture(gl.TEXTURE_2D, handTextureId);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, handTextureSize, 1, 0, gl.RGBA, gl.FLOAT, hand.data);
 
-   var uSphereInfo = gl.getUniformLocation(shaderProgram, "sphere_info");
-   gl.uniform1i(uSphereInfo, 0);
+  var uSphereInfo = gl.getUniformLocation(shaderProgram, "sphere_info");
+  gl.uniform1i(uSphereInfo, 0);
 
-   var uHandInfo = gl.getUniformLocation(shaderProgram, "hand_info");
-   gl.uniform1i(uHandInfo, 1);
+  var uHandInfo = gl.getUniformLocation(shaderProgram, "hand_info");
+  gl.uniform1i(uHandInfo, 1);
 
-   gl.drawArrays(gl.TRIANGLE_FAN, 0, squareVertexPositionBuffer.numItems);
+  gl.drawArrays(gl.TRIANGLE_FAN, 0, squareVertexPositionBuffer.numItems);
 }
 
 function tick()
@@ -247,6 +247,12 @@ function tick()
   var newTime = new Date().getTime();
   var dt = (newTime - lastTime)*0.001;
   elapsedTime += dt * 4.0;
+
+  var fps = document.getElementById("fps");
+  if (fps)
+  {
+    fps.innerHTML = (1.0/dt).toFixed(2).toString();
+  }
 
   if (recording === undefined)
   {
