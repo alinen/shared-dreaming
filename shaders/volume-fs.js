@@ -15,52 +15,14 @@ uniform vec3 hands_max;
 
 void planeIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 box_normal, in vec3 box_p1,
   out float plane_intersect)
-  {
-    float term_1 = dot(ray_start, box_normal);
-    float term_2 = dot(box_p1, box_normal);
-    float term_3 = dot(ray_dir, box_normal);
-
-    float t = (term_2 - term_1) / term_3;
-
-    plane_intersect = t;
-  }
-
-void bboxIntersection(in vec3 ray_start, in vec3 ray_dir, out float t)
 {
-  t = -1.0;
-  vec3 box_normals[4];
-  vec3 box_points[4];
+  float term_1 = dot(ray_start, box_normal);
+  float term_2 = dot(box_p1, box_normal);
+  float term_3 = dot(ray_dir, box_normal);
 
-  box_normals[0] = vec3(0.0, 1.0, 0.0); // bottom
-  box_normals[1] = vec3(0.0, 0.0, -1.0); // back
-  box_normals[2] = vec3(1.0, 0.0, 0.0); // left
-  box_normals[3] = vec3(-1.0, 0.0, 0.0); // right
-  //box_normals[4] = vec3(0.0, 1.0, 0.0); // bottom
+  float t = (term_2 - term_1) / term_3;
 
-  box_points[0] = vec3(0.0, hands_min.y, 0.0); // bottom
-  box_points[1] = vec3(0.0, 0.0, hands_min.z); // back
-  box_points[2] = vec3(hands_max.x, 0.0, 0.0); // left
-  box_points[3] = vec3(hands_min.x, 0.0, 0.0); // right
-  //box_points[4] = hands_min; // bottom
-
-  float min_t = 100.0;
-  float tmpt = -1.0;
-  vec3 isect;
-  float eps = 0.0001;
-
-  for (int i = 0; i < 4; i++)
-  {
-    planeIntersection(ray_start, ray_dir, box_normals[i], box_points[i], tmpt);
-
-    isect = ray_start + tmpt * ray_dir; // ASN TODO: proper AABB test
-    if (isect.x > hands_min.x-eps && isect.x < hands_max.x+eps &&
-        isect.y > hands_min.y-eps && isect.y < hands_max.y+eps &&
-        isect.z > hands_min.z-eps && isect.z < hands_max.z+eps )
-    {
-      min_t = min(min_t, tmpt);
-    }
-  }
-  if (min_t < 100.0) t = min_t;
+  plane_intersect = t;
 }
 
 void boxIntersection(in vec3 ray_start, in vec3 ray_dir, out vec3 intersection_point, out float min_t)
@@ -193,31 +155,6 @@ void blobIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 center, in flo
   density = density * 2.0; // add the remaining influence
 }
 
-void sphereQuickReject(in vec3 ray_start, in vec3 ray_dir, out float t)
-{
-  t = -1.0;
-
-  // Idea: check all intersecting spheres to get density
-  // Color pixel based on density
-  //
-  float closest = 100.0;
-  float radius = 0.05*10.0; 
-  for (float i = 0.0; i < 500.0; i+=10.0) // need to hardcode loop
-  { 
-    vec3 center;
-    getPosition(i, center);
-
-    float hitTime = -1.0;
-    sphereIntersection(ray_start, ray_dir, center, radius, hitTime);
-    if (hitTime > 0.0) 
-    {
-      t = hitTime;
-      return;
-    } 
-  }
-}
-
-
 void checkSpheres(in vec3 ray_start, in vec3 ray_dir, out float t, out vec4 color)
 {
   t = -1.0;
@@ -229,7 +166,7 @@ void checkSpheres(in vec3 ray_start, in vec3 ray_dir, out float t, out vec4 colo
   float density = 0.0;
   for (float i = 0.0; i < 500.0; i+=1.0) // need to hardcode loop
   { 
-    float radius = 0.05; // ASN TODO: why doesn't this work? pos_rad.w;
+    float radius = 0.09; 
 
     vec3 center;
     getPosition(i, center);

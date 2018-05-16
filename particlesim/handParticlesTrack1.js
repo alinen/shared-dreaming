@@ -36,9 +36,6 @@ class HandParticlesTrack1
          this.sh.pos[0] = -2.0 + this.params.r+cellj*margin;
          this.sh.pos[1] = this.params.r-celli*margin+1;
          this.sh.pos[2] = -2.0;
-         //this.sh.rgb[0] = 1.0; // not used
-         //this.sh.rgb[1] = 0.0;
-         //this.sh.rgb[2] = 0.0;
          this.sh.toData(i, this.data);
       }
       
@@ -54,14 +51,6 @@ class HandParticlesTrack1
        this.sh.pos[2] = pos[2];
        //console.log(pos[0]+" "+pos[1]+" "+pos[2]);
        this.sh.toData(idx, this.data);
-
-       //this.min[0] = Math.min(this.min[0], pos[0]);
-       //this.min[1] = Math.min(this.min[1], pos[1]);
-       //this.min[2] = Math.min(this.min[2], pos[2]);
-          
-       //this.max[0] = Math.max(this.max[0], pos[0]);
-       //this.max[1] = Math.max(this.max[1], pos[1]);
-       //this.max[2] = Math.max(this.max[2], pos[2]);
    }
 
    placeAlongSegment(idx, start, end, num)
@@ -98,10 +87,6 @@ class HandParticlesTrack1
 
       var src = vec3.fromValues(0,-2,2);
       idx = this.placeAlongSegment(idx, src, hand.fingerJoint(which, 'thumb', 1), 100);
-      //idx = this.placeAlongSegment(idx, src, hand.fingerJoint(which, 'middle', 1), 20);
-      //idx = this.placeAlongSegment(idx, src, hand.fingerJoint(which, 'ring', 1), 20);
-      //idx = this.placeAlongSegment(idx, src, hand.fingerJoint(which, 'pinky', 1), 20);
-      //idx = this.placeAlongSegment(idx, src, hand.fingerJoint(which, 'index', 1), 20);
       idx = this.placeAlongSegment(idx, hand.fingerJoint(which, 'thumb', 1), hand.fingerJoint(which, 'index', 1), 10);
       idx = this.placeAlongSegment(idx, hand.fingerJoint(which, 'thumb', 1), hand.fingerJoint(which, 'middle', 1), 10);
       idx = this.placeAlongSegment(idx, hand.fingerJoint(which, 'thumb', 1), hand.fingerJoint(which, 'ring', 1), 10);
@@ -118,16 +103,10 @@ class HandParticlesTrack1
 
       if (!this.paused && this.initialized && hand.getCurrentFrame())
       {
-          //this.min[0] = this.min[1] = this.min[2] = 99.0;
-          //this.max[0] = this.max[1] = this.max[2] = -99.0;
-
           var idx = 0;
           idx = this.updateHand(idx, hand, 'left');
           idx = this.updateHand(idx, hand, 'right');
           if (idx > this.maxNumSpheres) console.log("WARNING: "+idx+" > "+this.maxNumSpheres);
-
-          //console.log(this.min);
-          //console.log(this.max);
        }
    }
 };
