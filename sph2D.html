@@ -6,16 +6,19 @@
 
 <script type="text/javascript" src="glmatrix-min.js"></script>
 <script type="text/javascript" src="webgl-utils.js"></script>
-<script type="text/javascript" src="shaders/bubbles-fs.js"></script>
+
+<!-- shaders -->
+<script type="text/javascript" src="shaders/metaballs-sph2d-fs.js"></script>
 <script type="text/javascript" src="shaders/bubbles-vs.js"></script>
+
 <script type="text/javascript" src="particlesim/utils.js"></script>
 <script type="text/javascript" src="particlesim/sphereHelper.js"></script>
 <script type="text/javascript" src="particlesim/sph2d.js"></script>
-<script type="text/javascript" src="particlesim/particles.js"></script>
-<script type="text/javascript" src="particlesim/params20.js"></script>
+<script type="text/javascript" src="particlesim/particles_sph2D.js"></script>
+<script type="text/javascript" src="particlesim/params50.js"></script>
 
 </head><body onload="webGLStart();">
-    <canvas id="canvas" style="border: none;" width="720" height="480"></canvas>
+  <canvas id="canvas" style="border: none;" width="720" height="480"></canvas>
+  <h3 id="play" onclick="togglePlay();" style="cursor: pointer;">play</h3>
 </body>
 </html>
-

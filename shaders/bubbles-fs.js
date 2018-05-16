@@ -152,7 +152,7 @@ void main ()
 
   // // bubbles data
    for (float i = 0.0; i < 50.0; i+=1.0) { // need to hardcode loop
-     float startIndex = i * 3.0;
+     float startIndex = i;
 
      float tex_coord_1 = (startIndex + 0.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
      float tex_coord_2 = (startIndex + 1.0)/size_of_texture + 1.0/(2.0 * size_of_texture);
@@ -160,14 +160,14 @@ void main ()
      float tex_coord_y = 0.5;
 
      vec4 pos_rad = texture2D(sphere_info, vec2(tex_coord_1, tex_coord_y));
-     vec4 vel = texture2D(sphere_info, vec2(tex_coord_2, tex_coord_y));
-     vec4 rgb = texture2D(sphere_info, vec2(tex_coord_3, tex_coord_y));
+     //vec4 vel = texture2D(sphere_info, vec2(tex_coord_2, tex_coord_y));
+     //vec4 rgb = texture2D(sphere_info, vec2(tex_coord_3, tex_coord_y));
 
      sphereIntersection(camera_pos, normalized_view_dir, pos_rad.xyz, pos_rad.w, t);
 
      if (t >= 0.0) {
        hit_sphere_pos_rad = pos_rad;
-       hit_sphere_rgb = rgb;
+       hit_sphere_rgb = vec4(1.0, 0.6, 1.0, 1.0); 
        break;
      }
    }
