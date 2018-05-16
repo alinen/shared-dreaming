@@ -244,6 +244,9 @@ void checkSpheres(in vec3 ray_start, in vec3 ray_dir, out float t, out vec4 colo
     } 
   }
   color = vec4(1.0, 0.5, 1.0, density);
+  //density = density *0.75;
+  //density = max(0.0, min(1.0, density));
+  //color = vec4(1.0, 0.5, 1.0, density) * (1.0 - density) + density * vec4(0.0, 1.0, 1.0, density);
   if (closest < 100.0) t = closest;
 }
 
@@ -275,21 +278,9 @@ void main ()
   camera_pos = m2 * m * (camera_pos - sphere_center) + sphere_center;
 
   float t = -1.0;
-  sphereQuickReject(camera_pos, normalized_view_dir, t);
 
   vec4 hit_color;
-  // Test quick reject
-  /*
-  if (t < 0.0)
-  {
-    hit_color = vec4(1,0,0,1);
-  }*/
-  //gl_FragColor= hit_color;
-
-  if (t > 0.0)
-  {
-    checkSpheres(camera_pos, normalized_view_dir, t, hit_color);
-  }
+  checkSpheres(camera_pos, normalized_view_dir, t, hit_color);
  
   vec4 color = vec4(1.0,0.0,0.0,1.0);
   computeColor(camera_pos, normalized_view_dir, color);
