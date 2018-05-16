@@ -239,6 +239,12 @@ function tick()
     var dt = (newTime - lastTime)*0.001;
     elapsedTime += dt * 4.0;
 
+    var fps = document.getElementById("fps");
+    if (fps)
+    {
+      fps.innerHTML = (1.0/dt).toFixed(2).toString();
+    }
+
     //hand.update(); // play recorded JSON
     hand.update(framesJSONobj); // play realtime LeapMotion
     system.update(dt, hand);
