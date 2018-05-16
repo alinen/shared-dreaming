@@ -10,10 +10,6 @@ uniform sampler2D sphere_info; // width = num_of_spheres * 3 * 4; height = 1
 uniform float num_of_spheres;
 uniform float size_of_texture;
 uniform float threshold;
-uniform vec3 left_bs_center;
-uniform float left_bs_radius;
-uniform vec3 right_bs_center;
-uniform float right_bs_radius;
 
 void planeIntersection(in vec3 ray_start, in vec3 ray_dir, in vec3 box_normal, in vec3 box_p1,
   out float plane_intersect)
